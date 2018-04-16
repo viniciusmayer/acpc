@@ -1,4 +1,4 @@
-from Entity import Trabalho
+from acpa.Entity import Trabalho
 
 class Processar(object):
     
@@ -16,12 +16,12 @@ class Processar(object):
             if not titulo.strip():
                 detalhamento = elemento.getElementsByTagName(detalhamentoTagName)
                 titulo = detalhamento[0].getAttribute(nomeDoEventoAttributeName)
-            self.trabalhos.append(Trabalho(self.proximoId(), ano, titulo))
+            self.trabalhos.append(Trabalho(self.proximoNumero(), ano, titulo))
 
     def imprimir(self):
         for trabalho in self.trabalhos:
             trabalho.imprimir()
             
-    def proximoId(self):
+    def proximoNumero(self):
         self.contador += 1
         return self.contador

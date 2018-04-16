@@ -1,5 +1,5 @@
 from xml.dom import minidom
-from Service import Processar
+from acpa.Service import Processar
 
 if __name__ == '__main__':
     processar = Processar(minidom.parse('../files/lattes/curriculo.xml'))
