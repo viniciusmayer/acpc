@@ -8,4 +8,3 @@ class Trabalho(object):
     
     def imprimir(self):
         print('\n{0}\nnatureza:{1}\nano: {2}\ntitulo: {3}'.format(self.numero, self.natureza, self.ano, self.titulo))
-    
