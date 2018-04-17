@@ -7,16 +7,17 @@ class Processar(object):
         self.trabalhos = []
         self.contador = 0
         
-    def processar(self, tagName, dadosBasicosTagName, tituloAttributeName='TITULO', anoAttributeName='ANO', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):
+    def processar(self, tagName, dadosBasicosTagName, tituloAttributeName='TITULO', anoAttributeName='ANO', naturezaAttributeName='NATUREZA', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):
         elementos = self.arquivoXML.getElementsByTagName(tagName)
         for elemento in elementos:
             dadosBasicos = elemento.getElementsByTagName(dadosBasicosTagName)
             ano = dadosBasicos[0].getAttribute(anoAttributeName)
             titulo = dadosBasicos[0].getAttribute(tituloAttributeName)
+            natureza = dadosBasicos[0].getAttribute(naturezaAttributeName)
             if not titulo.strip():
                 detalhamento = elemento.getElementsByTagName(detalhamentoTagName)
                 titulo = detalhamento[0].getAttribute(nomeDoEventoAttributeName)
-            self.trabalhos.append(Trabalho(self.proximoNumero(), ano, titulo))
+            self.trabalhos.append(Trabalho(self.proximoNumero(), ano, titulo, natureza))
 
     def imprimir(self):
         for trabalho in self.trabalhos:
