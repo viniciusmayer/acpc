@@ -1,18 +1,12 @@
 from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
 
 class PDFGenerator(object):
-    def __init__(self, point = 1, inch = 72):
-        self.point = point
-        self.inch = inch
-
-    def processar(self, nomeArquivoDestino, numeroPaginas):
-        c = canvas.Canvas(nomeArquivoDestino)
-        c.setStrokeColorRGB(0, 0, 0)
-        c.setFillColorRGB(0, 0, 0)
-        c.setFont("Helvetica", 12 * self.point)
-        
+    def processar(self, arquivoDestino, numeroPaginas):
+        c = canvas.Canvas(arquivoDestino)
+        largura, altura = A4
         for pagina in range(1, numeroPaginas + 1):
-            for texto in ('{0}/{1}'.format(pagina, numeroPaginas)).split('\n'):
-                c.drawRightString(self.inch, self.inch, texto)
+            c.drawRightString(largura - cm, altura - cm, '{0}/{1}'.format(pagina, numeroPaginas))
             c.showPage()
         c.save()
