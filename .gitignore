@@ -5,3 +5,6 @@
 /pip-selfcheck.json
 /.project
 /.pydevproject
+/bin/
+/include/
+/lib/

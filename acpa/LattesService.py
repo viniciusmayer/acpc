@@ -4,7 +4,7 @@ import sqlite3
 class Processar(object):
     
     def __init__(self, arquivoXML):
-        self.conn = sqlite3.connect('lattes.db')
+        self.conn = sqlite3.connect('acpa.db')
         self.cursor = self.conn.cursor()
         self.cursor.execute('create table if not exists trabalho(id INTEGER PRIMARY KEY, titulo TEXT, ano INTEGER, natureza TEXT)')
         self.conn.commit()
@@ -22,22 +22,13 @@ class Processar(object):
             if not titulo.strip():
                 detalhamento = elemento.getElementsByTagName(detalhamentoTagName)
                 titulo = detalhamento[0].getAttribute(nomeDoEventoAttributeName)
-            self.trabalhos.append(Trabalho(self.proximoNumero(), ano, titulo, natureza))
-            insert = 'insert into trabalho (titulo, ano, natureza) values ({0}, {1}, {2})'
-            insert = insert.format(titulo, ano, natureza)
+            self.trabalhos.append(Trabalho(titulo, ano, natureza))
+            insert = 'insert into trabalho (titulo, ano, natureza) values (\'{0}\', {1}, \'{2}\')'.format(titulo, ano, natureza)
             self.cursor.execute(insert)
-            self.cursor.commit()
+            self.conn.commit()
 
     def imprimir(self):
-        for trabalho in self.trabalhos:
-            trabalho.imprimir()
-            
-    def imprimirDb(self):
         self.cursor.execute('select id, titulo, ano, natureza from trabalho')
         for linha in self.cursor.fetchall():
-            t = Trabalho(linha[0], linha[2], linha[1], linha[3])
+            t = Trabalho(linha[1], linha[2], linha[3], linha[0])
             t.imprimir()
-            
-    def proximoNumero(self):
-        self.contador += 1
-        return self.contador
