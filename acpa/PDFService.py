@@ -1,16 +1,13 @@
 from PyPDF2 import PdfFileWriter, PdfFileReader
-import os
+import glob
 
 class PDFService(object):
 
     def __init__(self, cabecalho, pastaOrigem, destino):
         self.cabecalho = PdfFileReader(open(cabecalho, 'rb'))
-
-        arquivos = [x for x in os.listdir(pastaOrigem) if x.endswith('.pdf')]
         self.arquivosOrigem = [] 
-        for arquivo in sorted(arquivos):
-            self.arquivosOrigem.append(PdfFileReader(open('{0}{1}'.format(pastaOrigem, arquivo), 'rb')))
-        
+        for arquivo in glob.iglob(pastaOrigem + '**/*.pdf', recursive=True):
+            self.arquivosOrigem.append(PdfFileReader(open(arquivo, 'rb')))
         self.nomeArquivoDestino = destino
         self.arquivoDestino = PdfFileWriter()
 
