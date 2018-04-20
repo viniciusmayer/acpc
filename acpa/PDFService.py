@@ -6,59 +6,49 @@ import glob, sys
 
 class PDFService(object):
 
-    def __init__(self, pastaOrigem, destino):
-        self.arquivosOrigem = [] 
-        contador = 0
-        for arquivo in glob.iglob(pastaOrigem + '**/a*.pdf', recursive=True):
+    def __init__(self, origem):
+        self.arquivos = {}
+        self.paginas = 0 
+        for arquivo in glob.iglob(origem + '**/a*.pdf', recursive=True):
             try:
                 pdfFile = PdfFileReader(open(arquivo, 'rb'))
                 if not pdfFile.isEncrypted:
-                    self.arquivosOrigem.append(pdfFile)
-                    contador += 1
-                    print('{0} arquivos lidos: {1}'.format(contador, arquivo))
+                    numeroPaginas = pdfFile.getNumPages()
+                    self.paginas += numeroPaginas 
+                    self.arquivos[arquivo] = pdfFile
+                    print('file add: {0}'.format(arquivo))
+                    print('file pages: {0}/{1}'.format(numeroPaginas, self.paginas))
             except:
-                print('ERROR reading: {0}'.format(arquivo))
+                print('ERROR reading file: {0}'.format(arquivo))
                 print(sys.exc_info())
-        self.nomeArquivoDestino = destino
-        self.arquivoDestino = PdfFileWriter()
 
-    def numeroPaginas(self):
-        numeroPaginas = 0
-        for i in self.arquivosOrigem:
-            try:
-                numeroPaginas += i.getNumPages()
-            except:
-                #TO DO remover arquivos com erro
-                print('ERROR: {0}'.format(i.getDocumentInfo()))
-                print(sys.exc_info())
-            
-        return numeroPaginas
-
-    def gerarCabecalho(self, arquivoDestino, numeroPaginas):
-        c = canvas.Canvas(arquivoDestino)
+    def gerarCabecalho(self, destino):
+        c = canvas.Canvas(destino)
         largura, altura = A4
-        for pagina in range(1, numeroPaginas + 1):
-            c.drawRightString(largura - cm, altura - cm, '{0}/{1}'.format(pagina, numeroPaginas))
+        for pagina in range(1, self.paginas + 1):
+            c.drawRightString(largura - cm, altura - cm, '{0}/{1}'.format(pagina, self.paginas))
             c.showPage()
-            print('pagina gerada: {0}/{1}'.format(pagina, numeroPaginas))
+            print('header page written: {0}/{1}'.format(pagina, self.paginas))
         c.save()
 
-    def gerarArquivo(self, cabecalho, numeroPaginas):
+    def gerarArquivo(self, cabecalho, destino):
         cabecalho = PdfFileReader(open(cabecalho, 'rb'))
-        numeroPagina = -1
-        for i in self.arquivosOrigem:
-            for j in range(i.getNumPages()):
-                numeroPagina += 1
-                paginaCabecalho = cabecalho.getPage(numeroPagina)
-                pagina = i.getPage(j)
+        arquivoDestino = PdfFileWriter()
+        numeroPaginaCabecalho = 0
+        for nomeArquivo in self.arquivos.keys():
+            arquivo = self.arquivos[nomeArquivo]
+            for numeroPagina in range(arquivo.getNumPages()):
+                paginaCabecalho = cabecalho.getPage(numeroPaginaCabecalho)
+                pagina = arquivo.getPage(numeroPagina)
                 try:
                     pagina.mergePage(paginaCabecalho)
-                    self.arquivoDestino.addPage(pagina)
-                    print('pagina processada: {0}/{1}'.format(numeroPagina, numeroPaginas))
+                    arquivoDestino.addPage(pagina)
+                    numeroPaginaCabecalho += 1
+                    print('page written: {0}/{1}'.format(numeroPaginaCabecalho, self.paginas))
                 except:
                     #TO DO remover arquivos com erro
-                    print('ERROR: {0}'.format(i.getDocumentInfo()))
+                    print('ERROR: {0}'.format(nomeArquivo))
                     print(sys.exc_info())
         
-        with open(self.nomeArquivoDestino, 'wb') as f:
-            self.arquivoDestino.write(f)
+        with open(destino, 'wb') as f:
+            arquivoDestino.write(f)
