@@ -16,8 +16,8 @@ class PDFService(object):
                     numeroPaginas = pdfFile.getNumPages()
                     self.paginas += numeroPaginas 
                     self.arquivos[arquivo] = pdfFile
-                    print('file add: {0}'.format(arquivo))
-                    print('file pages: {0}/{1}'.format(numeroPaginas, self.paginas))
+                    print('{0} file add: {1}'.format(len(self.arquivos), arquivo))
+                    print('pages: {0}/{1}'.format(numeroPaginas, self.paginas))
             except:
                 print('ERROR reading file: {0}'.format(arquivo))
                 print(sys.exc_info())
@@ -46,8 +46,7 @@ class PDFService(object):
                     numeroPaginaCabecalho += 1
                     print('page written: {0}/{1}'.format(numeroPaginaCabecalho, self.paginas))
                 except:
-                    #TO DO remover arquivos com erro
-                    print('ERROR: {0}'.format(nomeArquivo))
+                    print('ERROR writing page {0}: {1}'.format(numeroPagina, nomeArquivo))
                     print(sys.exc_info())
         
         with open(destino, 'wb') as f:
