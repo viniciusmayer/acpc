@@ -1,4 +1,4 @@
-from acpa.PDFService import PDFService
+from acpc.PDFService import PDFService
 
 if __name__ == '__main__':
     cabecalho = '../files/cabecalho.pdf'

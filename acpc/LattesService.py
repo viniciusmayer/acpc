@@ -1,10 +1,10 @@
-from acpa.Entity import Trabalho
+from acpc.Entity import Trabalho
 import sqlite3
 
 class Processar(object):
     
     def __init__(self, arquivoXML):
-        self.conn = sqlite3.connect('acpa.db')
+        self.conn = sqlite3.connect('acpc.db')
         self.cursor = self.conn.cursor()
         self.cursor.execute('create table if not exists trabalho(id INTEGER PRIMARY KEY, titulo TEXT, ano INTEGER, natureza TEXT)')
         self.conn.commit()
