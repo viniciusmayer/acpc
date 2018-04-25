@@ -1,8 +1,10 @@
+import glob, sys
+
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
-import glob, sys
+from reportlab.pdfgen import canvas
+
 
 class PDFService(object):
 
