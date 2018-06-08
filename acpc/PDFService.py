@@ -5,13 +5,14 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 
-
 class PDFService(object):
 
     def __init__(self, origem):
         self.arquivos = {}
-        self.paginas = 0 
-        for arquivo in glob.iglob(origem + '**/a*.pdf', recursive=True):
+        self.paginas = 0
+        self.largura, self.altura = A4
+ 
+        for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             try:
                 pdfFile = PdfFileReader(open(arquivo, 'rb'))
                 if not pdfFile.isEncrypted:
@@ -26,9 +27,8 @@ class PDFService(object):
 
     def gerarCabecalho(self, destino):
         c = canvas.Canvas(destino)
-        largura, altura = A4
         for pagina in range(1, self.paginas + 1):
-            c.drawRightString(largura - cm, altura - cm, '{0}/{1}'.format(pagina, self.paginas))
+            c.drawRightString(self.largura - cm, self.altura - cm, '{0}/{1}'.format(pagina, self.paginas))
             c.showPage()
             print('header page written: {0}/{1}'.format(pagina, self.paginas))
         c.save()
@@ -43,6 +43,7 @@ class PDFService(object):
                 paginaCabecalho = cabecalho.getPage(numeroPaginaCabecalho)
                 pagina = arquivo.getPage(numeroPagina)
                 try:
+                    pagina.scaleTo(self.largura, self.altura)
                     pagina.mergePage(paginaCabecalho)
                     arquivoDestino.addPage(pagina)
                     numeroPaginaCabecalho += 1
