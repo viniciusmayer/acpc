@@ -1,16 +1,17 @@
 import glob, sys
+import uuid
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.colors import Color
 from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
+
 
 class PDFService(object):
 
     def __init__(self, origem):
         self.arquivos = {}
         self.paginas = 0
-        self.largura, self.altura = A4
  
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             try:
@@ -25,25 +26,39 @@ class PDFService(object):
                 print('ERROR reading file: {0}'.format(arquivo))
                 print(sys.exc_info())
 
-    def gerarCabecalho(self, destino):
-        c = canvas.Canvas(destino)
-        for pagina in range(1, self.paginas + 1):
-            c.drawRightString(self.largura - cm, self.altura - cm, '{0}/{1}'.format(pagina, self.paginas))
-            c.showPage()
-            print('header page written: {0}/{1}'.format(pagina, self.paginas))
+    def gerarCabecalho(self, largura, altura, pagina):
+        u = str(uuid.uuid4())
+        c = canvas.Canvas(u, pagesize=(largura, altura))
+        
+        # fundo da pagina
+        c.setFillColor(Color(255, 255, 255, alpha=0.5))
+        c.setStrokeColor(Color(255, 255, 255, alpha=0.5))
+        c.rect(largura - (2.5 * cm), altura - (1.1 * cm), (1.9 * cm), (0.5 * cm), fill=1)
+        
+        # pagina
+        c.setFillColor(Color(0, 0, 0, alpha=1))
+        c.drawRightString(largura - (0.75 * cm), altura - (1 * cm), '{0}/{1}'.format(pagina, self.paginas))
+        
+        # assinatura
+        c.drawImage('files/assinaturaPaulaDanielePavan.jpg', largura - (2 * cm), 0, width=(2 * cm), height=(2 * cm))
+        c.showPage()
         c.save()
+        cabecalho = PdfFileReader(open(u, 'rb'))
+        return cabecalho.getPage(0)
 
-    def gerarArquivo(self, cabecalho, destino):
-        cabecalho = PdfFileReader(open(cabecalho, 'rb'))
+    def gerarArquivo(self, destino, limite=None):
         arquivoDestino = PdfFileWriter()
-        numeroPaginaCabecalho = 0
+        numeroPaginaCabecalho = 1
         for nomeArquivo in self.arquivos.keys():
+            if limite is not None and numeroPaginaCabecalho > limite:
+                break
             arquivo = self.arquivos[nomeArquivo]
             for numeroPagina in range(arquivo.getNumPages()):
-                paginaCabecalho = cabecalho.getPage(numeroPaginaCabecalho)
                 pagina = arquivo.getPage(numeroPagina)
+                largura = float(pagina.mediaBox.getWidth())
+                altura = float(pagina.mediaBox.getHeight())
+                paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho)
                 try:
-                    pagina.scaleTo(self.largura, self.altura)
                     pagina.mergePage(paginaCabecalho)
                     arquivoDestino.addPage(pagina)
                     numeroPaginaCabecalho += 1

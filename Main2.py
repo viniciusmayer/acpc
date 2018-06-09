@@ -1,5 +1,8 @@
-from acpc.PDFService import PDFService
+import sys
 import time
+
+from acpc.PDFService import PDFService
+
 
 def getElapsedTime(start):
     end = time.time()
@@ -10,23 +13,19 @@ def getElapsedTime(start):
 if __name__ == '__main__':
     print('===> begin')
     inicioA = time.time()
-    cabecalho = '../files/cabecalho.pdf'
-    pastaPDFs = '../files/pdfs/'
-    destino = '../files/destino.pdf'
+    pastaPDFs = 'files/pdfs/'
+    destino = 'files/destino.pdf'
     
     print('===> reading files')
     inicio = time.time()
     service = PDFService(pastaPDFs)
     print('===> files read: {0}'.format(getElapsedTime(inicio)))
     
-    print('===> writing header')
-    inicio = time.time()
-    service.gerarCabecalho(cabecalho)
-    print('===> header written: {0}'.format(getElapsedTime(inicio)))
-    
     print('===> writing file')
     inicio = time.time()
-    service.gerarArquivo(cabecalho, destino)
+    
+    limite = int(sys.argv[1]) if len(sys.argv) > 1 else None
+    service.gerarArquivo(destino, limite)
     print('===> file written: {0}'.format(getElapsedTime(inicio)))
     
     fim = time.time()
