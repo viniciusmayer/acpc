@@ -26,27 +26,26 @@ class PDFService(object):
                 print('ERROR reading file: {0}'.format(arquivo))
                 print(sys.exc_info())
 
-    def gerarCabecalho(self, largura, altura, pagina):
-        u = str(uuid.uuid4())
-        c = canvas.Canvas(u, pagesize=(largura, altura))
-        
-        # fundo da pagina
-        c.setFillColor(Color(255, 255, 255, alpha=0.5))
-        c.setStrokeColor(Color(255, 255, 255, alpha=0.5))
+    def gerarCabecalho(self, largura, altura, pagina, assinatura, tmp):
+        nomeArquivo = '{0}{1}'.format(tmp, str(uuid.uuid4()))
+        c = canvas.Canvas(nomeArquivo, pagesize=(largura, altura))
+        # fundo da paginacao
+        color = Color(255, 255, 255, alpha=0.5)
+        c.setFillColor(color)
+        c.setStrokeColor(color)
         c.rect(largura - (2.5 * cm), altura - (1.1 * cm), (1.9 * cm), (0.5 * cm), fill=1)
-        
-        # pagina
+        # paginacao
         c.setFillColor(Color(0, 0, 0, alpha=1))
         c.drawRightString(largura - (0.75 * cm), altura - (1 * cm), '{0}/{1}'.format(pagina, self.paginas))
-        
         # assinatura
-        c.drawImage('files/assinaturaPaulaDanielePavan.jpg', largura - (2 * cm), 0, width=(2 * cm), height=(2 * cm))
+        c.drawImage(assinatura, largura - (2 * cm), 0, width=(2 * cm), height=(2 * cm))
+        # gerar pagina
         c.showPage()
         c.save()
-        cabecalho = PdfFileReader(open(u, 'rb'))
+        cabecalho = PdfFileReader(open(nomeArquivo, 'rb'))
         return cabecalho.getPage(0)
 
-    def gerarArquivo(self, destino, limite=None):
+    def gerarArquivo(self, destino, assinatura, tmp, limite=None):
         arquivoDestino = PdfFileWriter()
         numeroPaginaCabecalho = 1
         for nomeArquivo in self.arquivos.keys():
@@ -57,7 +56,7 @@ class PDFService(object):
                 pagina = arquivo.getPage(numeroPagina)
                 largura = float(pagina.mediaBox.getWidth())
                 altura = float(pagina.mediaBox.getHeight())
-                paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho)
+                paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho, assinatura, tmp)
                 try:
                     pagina.mergePage(paginaCabecalho)
                     arquivoDestino.addPage(pagina)

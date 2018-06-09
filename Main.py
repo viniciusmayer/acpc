@@ -2,7 +2,7 @@ from xml.dom import minidom
 from acpc.LattesService import Processar
 
 if __name__ == '__main__':
-    processar = Processar(minidom.parse('../files/lattes/curriculo.xml'))
+    processar = Processar(minidom.parse('files/lattes/curriculo.xml'))
     processar.processar('TRABALHO-EM-EVENTOS', 'DADOS-BASICOS-DO-TRABALHO', 'TITULO-DO-TRABALHO', 'ANO-DO-TRABALHO')
     processar.processar('ARTIGO-PUBLICADO', 'DADOS-BASICOS-DO-ARTIGO', 'TITULO-DO-ARTIGO', 'ANO-DO-ARTIGO')
     processar.processar('LIVRO-PUBLICADO-OU-ORGANIZADO', 'DADOS-BASICOS-DO-LIVRO', 'TITULO-DO-LIVRO')
