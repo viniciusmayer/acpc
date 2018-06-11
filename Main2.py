@@ -1,6 +1,4 @@
-import shutil
-import sys
-import os
+import shutil, sys, os
 
 from acpc.PDFService import PDFService
 

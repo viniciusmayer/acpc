@@ -1,16 +1,13 @@
 from acpc.Entity import Trabalho
-import sqlite3
+import psycopg2
+
 
 class Processar(object):
     
     def __init__(self, arquivoXML):
-        self.conn = sqlite3.connect('acpc.db')
+        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
         self.cursor = self.conn.cursor()
-        self.cursor.execute('create table if not exists trabalho(id INTEGER PRIMARY KEY, titulo TEXT, ano INTEGER, natureza TEXT)')
-        self.conn.commit()
         self.arquivoXML = arquivoXML
-        self.trabalhos = []
-        self.contador = 0
         
     def processar(self, tagName, dadosBasicosTagName, tituloAttributeName='TITULO', anoAttributeName='ANO', naturezaAttributeName='NATUREZA', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):
         elementos = self.arquivoXML.getElementsByTagName(tagName)
@@ -22,13 +19,9 @@ class Processar(object):
             if not titulo.strip():
                 detalhamento = elemento.getElementsByTagName(detalhamentoTagName)
                 titulo = detalhamento[0].getAttribute(nomeDoEventoAttributeName)
-            self.trabalhos.append(Trabalho(titulo, ano, natureza))
-            insert = 'insert into trabalho (titulo, ano, natureza) values (\'{0}\', {1}, \'{2}\')'.format(titulo, ano, natureza)
-            self.cursor.execute(insert)
-            self.conn.commit()
-
-    def imprimir(self):
-        self.cursor.execute('select id, titulo, ano, natureza from trabalho')
-        for linha in self.cursor.fetchall():
-            t = Trabalho(linha[1], linha[2], linha[3], linha[0])
-            t.imprimir()
+            self.cursor.execute('select id from trabalhos_trabalho where titulo = \'{0}\' and ano = {1} and natureza = \'{2}\''.format(titulo, ano, natureza))
+            if (self.cursor.rowcount == 0):
+                insert = 'insert into trabalhos_trabalho (titulo, ano, natureza) values (\'{0}\', {1}, \'{2}\')'.format(titulo, ano, natureza)
+                self.cursor.execute(insert)
+                print('trabalho inserted: {0}, {1}, {2}'.format(titulo, ano, natureza))
+                self.conn.commit()

@@ -12,7 +12,6 @@ class PDFService(object):
     def __init__(self, origem):
         self.arquivos = {}
         self.paginas = 0
- 
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             try:
                 pdfFile = PdfFileReader(open(arquivo, 'rb'))
@@ -65,6 +64,5 @@ class PDFService(object):
                 except:
                     print('ERROR writing page {0}: {1}'.format(numeroPagina, nomeArquivo))
                     print(sys.exc_info())
-        
         with open(destino, 'wb') as f:
             arquivoDestino.write(f)
