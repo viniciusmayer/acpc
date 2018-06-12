@@ -1,5 +1,4 @@
-import glob, sys
-import uuid
+import glob, uuid, psycopg2
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from reportlab.lib.colors import Color
@@ -7,27 +6,23 @@ from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
 
 
-class PDFService(object):
+class GerarPDFService(object):
 
     def __init__(self, origem):
+        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+        self.cursor = self.conn.cursor()
         self.arquivos = {}
         self.paginas = 0
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
-            try:
-                pdfFile = PdfFileReader(open(arquivo, 'rb'))
-                if not pdfFile.isEncrypted:
-                    numeroPaginas = pdfFile.getNumPages()
-                    self.paginas += numeroPaginas 
-                    self.arquivos[arquivo] = pdfFile
-                    print('{0} file add: {1}'.format(len(self.arquivos), arquivo))
-                    print('pages: {0}/{1}'.format(numeroPaginas, self.paginas))
-            except:
-                print('ERROR reading file: {0}'.format(arquivo))
-                print(sys.exc_info())
+            pdfFile = PdfFileReader(open(arquivo, 'rb'))
+            if not pdfFile.isEncrypted:
+                numeroPaginas = pdfFile.getNumPages()
+                self.paginas += numeroPaginas 
+                self.arquivos[arquivo] = pdfFile
 
     def gerarCabecalho(self, largura, altura, pagina, assinatura, tmp):
-        nomeArquivo = '{0}{1}'.format(tmp, str(uuid.uuid4()))
-        c = canvas.Canvas(nomeArquivo, pagesize=(largura, altura))
+        arquivo = '{0}{1}'.format(tmp, str(uuid.uuid4()))
+        c = canvas.Canvas(arquivo, pagesize=(largura, altura))
         # fundo da paginacao
         color = Color(255, 255, 255, alpha=0.5)
         c.setFillColor(color)
@@ -41,10 +36,10 @@ class PDFService(object):
         # gerar pagina
         c.showPage()
         c.save()
-        cabecalho = PdfFileReader(open(nomeArquivo, 'rb'))
+        cabecalho = PdfFileReader(open(arquivo, 'rb'))
         return cabecalho.getPage(0)
 
-    def gerarArquivo(self, destino, assinatura, tmp, limite=None):
+    def processar(self, nomeArquivoDestino, assinatura, tmp, limite=None):
         arquivoDestino = PdfFileWriter()
         numeroPaginaCabecalho = 1
         for nomeArquivo in self.arquivos.keys():
@@ -56,13 +51,8 @@ class PDFService(object):
                 largura = float(pagina.mediaBox.getWidth())
                 altura = float(pagina.mediaBox.getHeight())
                 paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho, assinatura, tmp)
-                try:
-                    pagina.mergePage(paginaCabecalho)
-                    arquivoDestino.addPage(pagina)
-                    numeroPaginaCabecalho += 1
-                    print('page written: {0}/{1}'.format(numeroPaginaCabecalho, self.paginas))
-                except:
-                    print('ERROR writing page {0}: {1}'.format(numeroPagina, nomeArquivo))
-                    print(sys.exc_info())
-        with open(destino, 'wb') as f:
+                pagina.mergePage(paginaCabecalho)
+                arquivoDestino.addPage(pagina)
+                numeroPaginaCabecalho += 1
+        with open(nomeArquivoDestino, 'wb') as f:
             arquivoDestino.write(f)
