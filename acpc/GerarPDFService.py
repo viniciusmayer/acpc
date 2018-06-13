@@ -1,4 +1,4 @@
-import glob, uuid, psycopg2
+import glob, uuid, os
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from reportlab.lib.colors import Color
@@ -8,16 +8,15 @@ from reportlab.pdfgen import canvas
 
 class GerarPDFService(object):
 
-    def __init__(self, origem):
-        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-        self.cursor = self.conn.cursor()
+    def __init__(self, origem, tmp):
+        if not os.path.exists(tmp):
+            os.makedirs(tmp)
         self.arquivos = {}
         self.paginas = 0
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             pdfFile = PdfFileReader(open(arquivo, 'rb'))
             if not pdfFile.isEncrypted:
-                numeroPaginas = pdfFile.getNumPages()
-                self.paginas += numeroPaginas 
+                self.paginas += pdfFile.getNumPages() 
                 self.arquivos[arquivo] = pdfFile
 
     def gerarCabecalho(self, largura, altura, pagina, assinatura, tmp):
@@ -39,20 +38,21 @@ class GerarPDFService(object):
         cabecalho = PdfFileReader(open(arquivo, 'rb'))
         return cabecalho.getPage(0)
 
-    def processar(self, nomeArquivoDestino, assinatura, tmp, limite=None):
-        arquivoDestino = PdfFileWriter()
+    def processar(self, arquivoDestino, assinatura, tmp, limite=None):
+        _arquivoDestino = PdfFileWriter()
         numeroPaginaCabecalho = 1
         for nomeArquivo in self.arquivos.keys():
             if limite is not None and numeroPaginaCabecalho > limite:
                 break
             arquivo = self.arquivos[nomeArquivo]
-            for numeroPagina in range(arquivo.getNumPages()):
+            for numeroPagina in range(0, arquivo.getNumPages()):
                 pagina = arquivo.getPage(numeroPagina)
                 largura = float(pagina.mediaBox.getWidth())
                 altura = float(pagina.mediaBox.getHeight())
                 paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho, assinatura, tmp)
                 pagina.mergePage(paginaCabecalho)
-                arquivoDestino.addPage(pagina)
+                _arquivoDestino.addPage(pagina)
+                print('pagina gerada: {0}/{1}'.format(numeroPaginaCabecalho, self.paginas))
                 numeroPaginaCabecalho += 1
-        with open(nomeArquivoDestino, 'wb') as f:
-            arquivoDestino.write(f)
+        with open(arquivoDestino, 'wb') as f:
+            _arquivoDestino.write(f)

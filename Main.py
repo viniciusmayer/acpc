@@ -1,7 +1,6 @@
 import os
 import shutil
 import sys
-from xml.dom import minidom
 
 from acpc.GerarPDFService import GerarPDFService
 from acpc.ImportarLattesService import ImportarLattesService
@@ -11,7 +10,7 @@ from acpc.ImportarPDFsService import ImportarPDFsService
 def importarLattes(lattes):
     print()
     print('inicio - importar lattes')
-    processar = ImportarLattesService(minidom.parse(lattes))
+    processar = ImportarLattesService(lattes)
     processar.processar('TRABALHO-EM-EVENTOS', 'DADOS-BASICOS-DO-TRABALHO', 'TITULO-DO-TRABALHO', 'ANO-DO-TRABALHO')
     processar.processar('ARTIGO-PUBLICADO', 'DADOS-BASICOS-DO-ARTIGO', 'TITULO-DO-ARTIGO', 'ANO-DO-ARTIGO')
     processar.processar('LIVRO-PUBLICADO-OU-ORGANIZADO', 'DADOS-BASICOS-DO-LIVRO', 'TITULO-DO-LIVRO')
@@ -28,36 +27,38 @@ def importarLattes(lattes):
     processar.processar('OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS', 'DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS', 'TITULO', 'ANO', 'NATUREZA', 'DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS')
     print('fim - importar lattes')
     
-def importarPDFs(destino):
+def importarPDFs(origem, destino):
     print()
     print('inicio - importar pdfs')
-    service = ImportarPDFsService()
-    service.processar('files/pdfs/', destino)
+    service = ImportarPDFsService(destino)
+    service.processar(origem, destino)
     print('fim - importar lattes')
 
-def gerarPDF(destino, tmp, limite):
+def gerarPDF(origem, arquivoDestino, assinatura, tmp, limite):
     print()
     print('inicio - gerar pdf')
-    if not os.path.exists(tmp):
-        os.makedirs(tmp)
-    service = GerarPDFService(destino)
-    service.processar('files/arquivo.pdf', 'files/assinatura.jpg', tmp, limite)
+    service = GerarPDFService(origem, tmp)
+    service.processar(arquivoDestino, assinatura, tmp, limite)
     print('fim - gerar pdf')
 
+lattes = 'files/lattes/curriculo.xml'
+origem = 'files/pdfs/'
+destino = 'files/uploads/'
+arquivoDestino = 'files/arquivo.pdf'
+assinatura = 'files/assinatura.jpg'
+tmp = 'files/tmp/'
 if __name__ == '__main__':
     print()
     print('inicio')
     for i in range(1, len(sys.argv)):
         comando = sys.argv[i]
         if (comando == 'importarlattes'):
-            importarLattes('files/lattes/curriculo.xml')
+            importarLattes(lattes)
         elif (comando == 'importarpdfs'):
-            destino = '/home/eleonorvinicius/Projects/acpc/files/uploads/'
-            importarPDFs(destino)
+            importarPDFs(origem, destino)
         elif (comando == 'gerarpdf'):
             limite = int(sys.argv[sys.argv.index('-l') + 1]) if '-l' in sys.argv else None
-            tmp = 'files/tmp/'
-            gerarPDF(destino, tmp, limite)
+            gerarPDF(destino, arquivoDestino, assinatura, tmp, limite)
         elif (comando == '-l'):
             break
         else:
@@ -69,5 +70,6 @@ if __name__ == '__main__':
             print('        gerarpdf [-l <number of pages to be generated>]')
             print('example: main importarlattes importarpfds')
             print('example: main importarpfds gerarpdf -l 35')
-    shutil.rmtree(tmp)
-    print('inicio')
+    if os.path.exists(tmp):
+        shutil.rmtree(tmp)
+    print('fim')
