@@ -34,17 +34,16 @@ def importarPDFs(origem, destino):
     service.processar(origem, destino)
     print('fim - importar lattes')
 
-def gerarPDF(origem, arquivoDestino, assinatura, tmp, limite):
+def gerarPDF(origem, assinatura, tmp, limite):
     print()
     print('inicio - gerar pdf')
     service = GerarPDFService(origem, tmp)
-    service.processar(arquivoDestino, assinatura, tmp, limite)
+    service.processar(assinatura, tmp)
     print('fim - gerar pdf')
 
 lattes = 'files/lattes/curriculo.xml'
 origem = 'files/pdfs/'
 destino = 'files/uploads/'
-arquivoDestino = 'files/arquivo.pdf'
 assinatura = 'files/assinatura.jpg'
 tmp = 'files/tmp/'
 if __name__ == '__main__':
@@ -58,7 +57,7 @@ if __name__ == '__main__':
             importarPDFs(origem, destino)
         elif (comando == 'gerarpdf'):
             limite = int(sys.argv[sys.argv.index('-l') + 1]) if '-l' in sys.argv else None
-            gerarPDF(destino, arquivoDestino, assinatura, tmp, limite)
+            gerarPDF(destino, assinatura, tmp, limite)
         elif (comando == '-l'):
             break
         else:
