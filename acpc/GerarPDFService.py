@@ -16,11 +16,10 @@ class GerarPDFService(object):
         self.arquivos = {}
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             pdfFile = PdfFileReader(open(arquivo, 'rb'))
-            if not pdfFile.isEncrypted:
-                nomeArquivoOrigem = arquivo[arquivo.rfind('/') + 1:len(arquivo)] 
-                self.arquivos[nomeArquivoOrigem] = pdfFile
+            nomeArquivoOrigem = arquivo[arquivo.rfind('/') + 1:len(arquivo)] 
+            self.arquivos[nomeArquivoOrigem] = pdfFile
 
-    def gerarCabecalho(self, largura, altura, pagina, assinatura, tmp, numeroPaginas):
+    def gerarCabecalho(self, largura, altura, pagina, numeroPaginas, assinatura, tmp):
         arquivo = '{0}{1}'.format(tmp, str(uuid.uuid4()))
         c = canvas.Canvas(arquivo, pagesize=(largura, altura))
         # fundo da paginacao
@@ -40,39 +39,39 @@ class GerarPDFService(object):
         return cabecalho.getPage(0)
 
     def processar(self, assinatura, tmp):
-        selectEventoENumeroPaginas = 'select e.id, e.nome, sum(a.paginas) \
+        selectEventoQuandoENumeroPaginas = 'select e.id, e.nome, e.quando, sum(a.paginas) \
                                 from public.trabalhos_eventotrabalho et \
                                     inner join public.trabalhos_evento e on e.id=et.evento_id \
                                     inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
                                     inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
-                                group by e.id, e.nome'
-        self.cursor.execute(selectEventoENumeroPaginas)
+                                group by e.id, e.nome, e.quando'
+        self.cursor.execute(selectEventoQuandoENumeroPaginas)
         rows = self.cursor.fetchall()
         for row in rows:
-            idEvento = row[0]
-            nomeEvento = row[1]
-            numeroPaginas = row[2]
+            numeroPaginas = row[3]
             numeroPaginaCabecalho = 1
             _arquivoDestino = PdfFileWriter()
-            selectNomeEArquivos = 'select e.nome, a.arquivo \
+            selectArquivos = 'select a.arquivo \
                         from public.trabalhos_eventotrabalho et \
                             inner join public.trabalhos_evento e on e.id=et.evento_id and e.id = {0} \
                             inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
                             inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
-                        order by et.ordem asc'.format(idEvento)
-            self.cursor.execute(selectNomeEArquivos)
+                        order by et.ordem asc'.format(row[0])
+            self.cursor.execute(selectArquivos)
             _rows = self.cursor.fetchall()
             for _row in _rows:
-                nomeArquivo = _row[1]
+                nomeArquivo = _row[0]
                 arquivo = self.arquivos[nomeArquivo]
                 for numeroPagina in range(0, arquivo.getNumPages()):
                     pagina = arquivo.getPage(numeroPagina)
                     largura = float(pagina.mediaBox.getWidth())
                     altura = float(pagina.mediaBox.getHeight())
-                    paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho, assinatura, tmp, numeroPaginas)
+                    paginaCabecalho = self.gerarCabecalho(largura, altura, numeroPaginaCabecalho, numeroPaginas, assinatura, tmp)
                     pagina.mergePage(paginaCabecalho)
                     _arquivoDestino.addPage(pagina)
                     print('pagina gerada: {0}/{1}'.format(numeroPaginaCabecalho, numeroPaginas))
                     numeroPaginaCabecalho += 1
-            with open('{0}.{1}'.format(nomeEvento, 'pdf'), 'wb') as f:
+            nome = '{0}-{1}.{2}'.format(row[1], row[2], 'pdf')
+            with open(nome, 'wb') as f:
                 _arquivoDestino.write(f)
+                print('arquivo gerado: {0}'.format(nome))
