@@ -8,9 +8,6 @@ class ImportarLattesService(object):
     def __init__(self, lattes):
         self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
         self.cursor = self.conn.cursor()
-        #delete = 'DELETE FROM public.trabalhos_trabalho'
-        #self.cursor.execute(delete)
-        #self.conn.commit()
         self.arquivo = minidom.parse(lattes)
         
     def processar(self, tagName, dadosBasicosTagName, tituloAttributeName='TITULO', anoAttributeName='ANO', naturezaAttributeName='NATUREZA', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):

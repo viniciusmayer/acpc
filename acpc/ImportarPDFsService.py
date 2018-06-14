@@ -10,9 +10,6 @@ class ImportarPDFsService(object):
             os.makedirs(destino)
         self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
         self.cursor = self.conn.cursor()
-        #delete = 'DELETE FROM public.trabalhos_arquivo'
-        #self.cursor.execute(delete)
-        #self.conn.commit()
 
     def processar(self, origem, destino):
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
