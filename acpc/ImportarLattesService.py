@@ -10,22 +10,34 @@ class ImportarLattesService(object):
         self.cursor = self.conn.cursor()
         self.arquivo = minidom.parse(lattes)
         
-    def processar(self, tagName, dadosBasicosTagName, tituloAttributeName='TITULO', anoAttributeName='ANO', naturezaAttributeName='NATUREZA', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):
+    def processar(self, tagName, dadosBasicosTagName=None, tituloAttributeName='TITULO', anoAttributeName='ANO', anoFimAttributeName=None, naturezaAttributeName='NATUREZA', detalhamentoTagName=None, nomeDoEventoAttributeName='NOME-DO-EVENTO'):
         elementos = self.arquivo.getElementsByTagName(tagName)
         for elemento in elementos:
-            dadosBasicos = elemento.getElementsByTagName(dadosBasicosTagName)
-            ano = dadosBasicos[0].getAttribute(anoAttributeName)
-            titulo = dadosBasicos[0].getAttribute(tituloAttributeName)
-            natureza = dadosBasicos[0].getAttribute(naturezaAttributeName)
-            if not titulo.strip():
-                detalhamento = elemento.getElementsByTagName(detalhamentoTagName)
-                titulo = detalhamento[0].getAttribute(nomeDoEventoAttributeName)
-            select = 'select id from public.trabalhos_trabalho where titulo = \'{0}\' and ano = {1} and natureza = \'{2}\''.format(titulo, ano, natureza)
+            ano = None
+            anoFim = None
+            titulo = None
+            natureza = None
+            
+            _elemento = elemento
+            if dadosBasicosTagName:
+                _elemento = elemento.getElementsByTagName(dadosBasicosTagName)[0]
+            ano = _elemento.getAttribute(anoAttributeName).strip()
+            anoFim = ano if not anoFimAttributeName else _elemento.getAttribute(anoFimAttributeName).strip()  
+            titulo = _elemento.getAttribute(tituloAttributeName).strip()
+            natureza = None if not naturezaAttributeName else _elemento.getAttribute(naturezaAttributeName).strip()
+
+            if not titulo:
+                titulo = elemento.getElementsByTagName(detalhamentoTagName)[0].getAttribute(nomeDoEventoAttributeName).strip()
+
+            natureza = 'OUTRA' if not natureza or natureza == 'NAO_INFORMADO' else natureza.upper()
+            natureza = 'SIMPOSIO' if natureza == 'SIMPÓSIO' else natureza
+            
+            select = 'select id from public.trabalhos_trabalho where titulo = \'{0}\' and ano = {1} and natureza = \'{2}\' and tag = \'{3}\''.format(titulo, ano, natureza, tagName)
             self.cursor.execute(select)
             if (self.cursor.rowcount == 0):
-                insert = 'insert into public.trabalhos_trabalho (titulo, ano, natureza) values (\'{0}\', {1}, \'{2}\')'.format(titulo, ano, natureza)
+                insert = 'insert into public.trabalhos_trabalho (titulo, ano, natureza, tag, ano_fim) values (\'{0}\', {1}, \'{2}\', \'{3}\', {4})'.format(titulo, ano, natureza, tagName, 'null' if not anoFim else anoFim)
                 self.cursor.execute(insert)
                 self.conn.commit()
-                print('trabalho inserido: {0}, {1}, {2}'.format(titulo, ano, natureza))
+                print('trabalho inserido: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, natureza, tagName, anoFim))
             else:
-                print('trabalho NAO inserido: {0}, {1}, {2}'.format(titulo, ano, natureza))
+                print('trabalho NAO inserido: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, natureza, tagName, anoFim))
