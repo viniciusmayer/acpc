@@ -26,6 +26,6 @@ class ImportarPDFsService(object):
                     self.conn.commit()
                     print('arquivo inserido: {0}'.format(nomeArquivoOrigem))
                 else:
-                    print('arquivo NAO inserido: {0}'.format(nomeArquivoOrigem))
+                    print('arquivo ignorado: {0}'.format(nomeArquivoOrigem))
             else:
-                print('arquivo NAO inserido: {0}'.format(nomeArquivoOrigem))
+                print('arquivo ignorado: {0}'.format(nomeArquivoOrigem))

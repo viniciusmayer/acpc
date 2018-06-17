@@ -29,7 +29,7 @@ class ImportarLattesService(object):
             if dadosBasicosTagName:
                 _elemento = elemento.getElementsByTagName(dadosBasicosTagName)[0]
             ano = _elemento.getAttribute(anoAttributeName).strip()
-            anoFim = _elemento.getAttribute(anoFimAttributeName).strip()  
+            anoFim = ano if not anoFimAttributeName else _elemento.getAttribute(anoFimAttributeName).strip()  
             titulo = _elemento.getAttribute(tituloAttributeName).strip()
             natureza = _elemento.getAttribute(naturezaAttributeName).strip()
 
@@ -44,7 +44,7 @@ class ImportarLattesService(object):
                 if not natureza:
                     natureza = _elemento.getAttribute(naturezaAttributeName).strip()
 
-            natureza = 'OUTRA' if not natureza or natureza == 'NAO_INFORMADO' else natureza.upper()
+            natureza = 'OUTRA' if not natureza or natureza == 'NAO_INFORMADO' else natureza.upper().replace(' ', '-').replace('_', '-')
             natureza = 'SIMPOSIO' if natureza == 'SIMPÓSIO' else natureza
             
             select = 'select id from public.trabalhos_trabalho \
@@ -57,4 +57,4 @@ class ImportarLattesService(object):
                 self.conn.commit()
                 print('trabalho inserido: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, natureza, tagName, anoFim))
             else:
-                print('trabalho NAO inserido: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, natureza, tagName, anoFim))
+                print('trabalho ignorado: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, natureza, tagName, anoFim))
