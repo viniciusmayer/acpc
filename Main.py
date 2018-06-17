@@ -16,20 +16,31 @@ def importarLattes(lattes):
     service.processar(tagName='DOUTORADO', tituloAttributeName='TITULO-DA-DISSERTACAO-TESE', anoAttributeName='ANO-DE-INICIO', anoFimAttributeName='ANO-DE-CONCLUSAO')
     service.processar(tagName='FORMACAO-COMPLEMENTAR-DE-EXTENSAO-UNIVERSITARIA', tituloAttributeName='NOME-CURSO', anoAttributeName='ANO-DE-INICIO', anoFimAttributeName='ANO-DE-CONCLUSAO')
     service.processar(tagName='FORMACAO-COMPLEMENTAR-CURSO-DE-CURTA-DURACAO', tituloAttributeName='NOME-CURSO', anoAttributeName='ANO-DE-INICIO', anoFimAttributeName='ANO-DE-CONCLUSAO')
+    
+    service.processar(tagName='ATUACAO-PROFISSIONAL'
+                      , dadosBasicosTagName=None
+                      , tituloAttributeName='NOME-INSTITUICAO'
+                      , anoAttributeName='ANO-INICIO'
+                      , anoFimAttributeName='ANO-FIM'
+                      , naturezaAttributeName='OUTRO-VINCULO-INFORMADO'
+                      , detalhamentoTagName='VINCULOS'
+                      , nomeDoEventoAttributeName='OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO')
+    
     service.processar(tagName='PROJETO-DE-PESQUISA', tituloAttributeName='NOME-DO-PROJETO', anoAttributeName='ANO-INICIO', anoFimAttributeName='ANO-FIM')
-    service.processar(tagName='TRABALHO-EM-EVENTOS', dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO', tituloAttributeName='TITULO-DO-TRABALHO', anoAttributeName='ANO-DO-TRABALHO', anoFimAttributeName='ANO-DO-TRABALHO')
+    service.processar(tagName='PREMIO-TITULO', tituloAttributeName='NOME-DO-PREMIO-OU-TITULO', anoAttributeName='ANO-DA-PREMIACAO')
     service.processar(tagName='ARTIGO-PUBLICADO', dadosBasicosTagName='DADOS-BASICOS-DO-ARTIGO', tituloAttributeName='TITULO-DO-ARTIGO', anoAttributeName='ANO-DO-ARTIGO')
     service.processar(tagName='LIVRO-PUBLICADO-OU-ORGANIZADO', dadosBasicosTagName='DADOS-BASICOS-DO-LIVRO', tituloAttributeName='TITULO-DO-LIVRO', anoAttributeName='ANO')
     service.processar(tagName='CAPITULO-DE-LIVRO-PUBLICADO', dadosBasicosTagName='DADOS-BASICOS-DO-CAPITULO', tituloAttributeName='TITULO-DO-CAPITULO-DO-LIVRO')
-    service.processar(tagName='TRABALHO-TECNICO', dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO-TECNICO', tituloAttributeName='TITULO-DO-TRABALHO-TECNICO')
+    service.processar(tagName='TRABALHO-EM-EVENTOS', dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO', tituloAttributeName='TITULO-DO-TRABALHO', anoAttributeName='ANO-DO-TRABALHO', anoFimAttributeName='ANO-DO-TRABALHO')
     service.processar(tagName='APRESENTACAO-DE-TRABALHO', dadosBasicosTagName='DADOS-BASICOS-DA-APRESENTACAO-DE-TRABALHO')
+    service.processar(tagName='TRABALHO-TECNICO', dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO-TECNICO', tituloAttributeName='TITULO-DO-TRABALHO-TECNICO')
     service.processar(tagName='CURSO-DE-CURTA-DURACAO-MINISTRADO', dadosBasicosTagName='DADOS-BASICOS-DE-CURSOS-CURTA-DURACAO-MINISTRADO')
-    service.processar(tagName='ORGANIZACAO-DE-EVENTO', dadosBasicosTagName='DADOS-BASICOS-DA-ORGANIZACAO-DE-EVENTO')
     service.processar(tagName='OUTRAS-BANCAS-JULGADORAS', dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-BANCAS-JULGADORAS')
-    service.processar(tagName='PARTICIPACAO-EM-CONGRESSO', dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO', detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-CONGRESSO')
     service.processar(tagName='PARTICIPACAO-EM-SEMINARIO', dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-SEMINARIO', detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-SEMINARIO')
+    service.processar(tagName='PARTICIPACAO-EM-CONGRESSO', dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-CONGRESSO', detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-CONGRESSO')
     service.processar(tagName='PARTICIPACAO-EM-SIMPOSIO', dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-SIMPOSIO', detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-SIMPOSIO')
     service.processar(tagName='PARTICIPACAO-EM-ENCONTRO', dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-ENCONTRO', detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-ENCONTRO')
+    service.processar(tagName='ORGANIZACAO-DE-EVENTO', dadosBasicosTagName='DADOS-BASICOS-DA-ORGANIZACAO-DE-EVENTO')
     service.processar(tagName='OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS', dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS', detalhamentoTagName='DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS')
     print('fim - importar lattes')
     
