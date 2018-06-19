@@ -1,7 +1,10 @@
+from datetime import datetime
 import os
 import shutil
 import sys
+import uuid
 
+from acpc.GerarEventoService import GerarEventoService
 from acpc.GerarPDFService import GerarPDFService
 from acpc.ImportarLattesService import ImportarLattesService
 from acpc.ImportarPDFsService import ImportarPDFsService
@@ -45,12 +48,19 @@ def importarPDFs(origem, destino):
     service.processar(origem, destino)
     print('fim - importar lattes')
 
-def gerarPDF(origem, assinatura, tmp, limite):
+def gerarPDF(origem, assinatura, tmp):
     print()
     print('inicio - gerar pdf')
     service = GerarPDFService(origem, tmp)
     service.processar(assinatura, tmp)
     print('fim - gerar pdf')
+
+def gerarEvento(nome, quando):
+    print()
+    print('inicio - gerar evento')
+    service = GerarEventoService()
+    service.processar(nome, quando)
+    print('fim - gerar evento')
 
 lattes = 'files/lattes/curriculo.xml'
 origem = 'files/pdfs/'
@@ -67,19 +77,20 @@ if __name__ == '__main__':
         elif (comando == 'importarpdfs'):
             importarPDFs(origem, destino)
         elif (comando == 'gerarpdf'):
-            limite = int(sys.argv[sys.argv.index('-l') + 1]) if '-l' in sys.argv else None
-            gerarPDF(destino, assinatura, tmp, limite)
-        elif (comando == '-l'):
-            break
+            #limite = int(sys.argv[sys.argv.index('-l') + 1]) if '-l' in sys.argv else None
+            gerarPDF(destino, assinatura, tmp)
+        elif (comando == 'gerarevento'):
+            gerarEvento(str(uuid.uuid4()), datetime.today())
         else:
             print('= help =')
             print('command: main [options,]')
             print('options:')
             print('        importarlattes')
             print('        importarpdfs')
-            print('        gerarpdf [-l <number of pages to be generated>]')
-            print('example: main importarlattes importarpfds')
-            print('example: main importarpfds gerarpdf -l 35')
+            print('        gerarevento')
+            print('        gerarpdf')
+            print('example: main importarlattes importarpfds gerarevento gerarpdf')
+            print('example: main importarpfds gerarpdf')
     if os.path.exists(tmp):
         shutil.rmtree(tmp)
     print('fim')
