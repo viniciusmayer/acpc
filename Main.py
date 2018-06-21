@@ -114,10 +114,10 @@ def gerarEvento(nome, quando):
     service.processar(nome, quando)
     print('fim - gerar evento')
 
-def fazerBackup(pgpass, maquina, porta, banco, usuario, quando):
+def fazerBackup(pgpass, maquina, porta, banco, usuario, quando, destino):
     print()
     print('inicio - fazer backup')
-    service = FazerBackupService(pgpass, maquina, porta, banco, usuario, quando)
+    service = FazerBackupService(pgpass, maquina, porta, banco, usuario, quando, destino)
     service.processar()
     print('fim - fazer backup')
 
@@ -141,6 +141,7 @@ destino = 'files/uploads/'
 assinatura = 'files/assinatura.jpg'
 tmp = 'files/tmp/'
 pgpass = '/home/eleonorvinicius/.pgpass'
+backup = '/home/eleonorvinicius/Dropbox/Backup/'
 if __name__ == '__main__':
     print()
     print('inicio')
@@ -157,7 +158,7 @@ if __name__ == '__main__':
             elif (comando == 'gerarevento'):
                 gerarEvento(str(uuid.uuid4()), datetime.today())
             elif (comando == 'fazerbackup'):
-                fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today())
+                fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today(), backup)
             else:
                 ajuda()
     else:

@@ -5,9 +5,9 @@ import subprocess
 
 class FazerBackupService(object):
 
-    def __init__(self, pgpass, maquina, porta, banco, usuario, quando):
+    def __init__(self, pgpass, maquina, porta, banco, usuario, quando, destino):
         self.pgpass, self.maquina, self.porta, self.banco, self.usuario, self.quando = pgpass, maquina, porta, banco, usuario, quando 
-        self.arquivo = '{b}-{q}.gz'.format(b=banco, q=quando.strftime('%Y-%m-%d'))
+        self.arquivo = '{d}{b}-{q}.gz'.format(b=banco, q=quando.strftime('%Y-%m-%d'), d=destino)
 
     def processar(self):
         os.putenv('PGPASSFILE', self.pgpass)
