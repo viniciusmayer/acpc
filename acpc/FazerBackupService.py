@@ -24,7 +24,7 @@ class FazerBackupService(object):
         os.unsetenv('PGPASSFILE')
 
     '''
-    metodos possiveis de se fazer dump de um banco de dados (postgres) com python.
+    abaixo outros metodos possiveis de se fazer dump de um banco de dados (postgres) com python.
     '''
 
     def processarb(self):

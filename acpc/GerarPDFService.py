@@ -40,11 +40,11 @@ class GerarPDFService(object):
 
     def processar(self, assinatura, tmp):
         selectEventoQuandoENumeroPaginas = 'select e.id, e.nome, e.quando, sum(a.paginas) \
-                                from public.trabalhos_eventotrabalho et \
-                                    inner join public.trabalhos_evento e on e.id=et.evento_id \
-                                    inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
-                                    inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
-                                group by e.id, e.nome, e.quando'
+                                            from public.trabalhos_eventotrabalho et \
+                                                inner join public.trabalhos_evento e on e.id=et.evento_id \
+                                                inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
+                                                inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
+                                            group by e.id, e.nome, e.quando'
         self.cursor.execute(selectEventoQuandoENumeroPaginas)
         rows = self.cursor.fetchall()
         for row in rows:
@@ -52,11 +52,11 @@ class GerarPDFService(object):
             numeroPaginaCabecalho = 1
             _arquivoDestino = PdfFileWriter()
             selectArquivos = 'select a.arquivo \
-                        from public.trabalhos_eventotrabalho et \
-                            inner join public.trabalhos_evento e on e.id=et.evento_id and e.id = {0} \
-                            inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
-                            inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
-                        order by et.ordem asc'.format(row[0])
+                                from public.trabalhos_eventotrabalho et \
+                                    inner join public.trabalhos_evento e on e.id=et.evento_id and e.id = {0} \
+                                    inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
+                                    inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
+                                order by et.ordem asc'.format(row[0])
             self.cursor.execute(selectArquivos)
             _rows = self.cursor.fetchall()
             for _row in _rows:

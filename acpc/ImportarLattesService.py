@@ -31,6 +31,7 @@ class ImportarLattesService(object):
             print('natureza inserido: {0}'.format(nome))
         else:
             print('natureza ignorado: {0}'.format(nome))
+        return nome
             
     def inserirTrabalho(self, titulo, ano, anoFim, natureza, tag):
         selectTag = 'select id from public.trabalhos_tag where nome = \'{0}\''.format(tag)
@@ -53,14 +54,15 @@ class ImportarLattesService(object):
             print('trabalho ignorado: {0}, {1}, {2}, {3}, {4}'.format(titulo, ano, anoFim, natureza, tag))                
 
     def setValues(self, elemento, ano, anoTag, anoFim, anoFimTag, titulo, tituloTag, natureza, naturezaTag):
-        if not ano:
-            ano = elemento.getAttribute(anoTag).strip()
-        if not anoFim:
-            anoFim = ano if not anoFimTag else elemento.getAttribute(anoFimTag).strip() 
-        if not titulo:
-            titulo = elemento.getAttribute(tituloTag).strip()
-        if not natureza:
-            natureza = elemento.getAttribute(naturezaTag).strip()
+        _ano = elemento.getAttribute(anoTag).strip()
+        ano = _ano if _ano else ano
+        _anoFim = ano if not anoFimTag else elemento.getAttribute(anoFimTag).strip()
+        anoFim = _anoFim if _anoFim else anoFim
+        _titulo = elemento.getAttribute(tituloTag).strip()
+        titulo = _titulo if _titulo else titulo
+        _natureza = elemento.getAttribute(naturezaTag).strip()
+        natureza = _natureza if _natureza else natureza 
+        natureza = 'OUTRA' if not natureza or natureza== 'NAO_INFORMADO' else natureza.upper().replace(' ', '-').replace('_', '-').replace('Ó', 'O').replace('Á', 'A')
         return ano, anoFim, titulo, natureza
 
     def processar(self, tagName, tagOrdem=None, dadosBasicosTagName=None, tituloAttributeName='TITULO', anoAttributeName='ANO'
@@ -74,9 +76,10 @@ class ImportarLattesService(object):
             ano, anoFim, titulo, natureza = [None, None, None, None]
             ano, anoFim, titulo, natureza = self.setValues(_elemento, ano, anoAttributeName, anoFim, anoFimAttributeName, titulo, tituloAttributeName, natureza, naturezaAttributeName)
             if detalhamentoTagName and len(elemento.getElementsByTagName(detalhamentoTagName)) > 0:
-                _elemento = elemento.getElementsByTagName(detalhamentoTagName)[0]
-                ano, anoFim, titulo, natureza = self.setValues(_elemento, ano, anoAttributeName, anoFim, anoFimAttributeName, titulo, nomeDoEventoAttributeName, natureza, naturezaAttributeName)
-            natureza = 'OUTRA' if not natureza or natureza == 'NAO_INFORMADO' else natureza.upper().replace(' ', '-').replace('_', '-')
-            natureza = 'SIMPOSIO' if natureza == 'SIMPÓSIO' else natureza
-            self.inserirNatureza(natureza)
-            self.inserirTrabalho(titulo, ano, anoFim, natureza, tagName)
+                for _elemento in elemento.getElementsByTagName(detalhamentoTagName):
+                    ano, anoFim, titulo, natureza = self.setValues(_elemento, ano, anoAttributeName, anoFim, anoFimAttributeName, titulo, nomeDoEventoAttributeName, natureza, naturezaAttributeName)
+                    self.inserirNatureza(natureza)
+                    self.inserirTrabalho(titulo, ano, anoFim, natureza, tagName)
+            else:
+                self.inserirNatureza(natureza)
+                self.inserirTrabalho(titulo, ano, anoFim, natureza, tagName)
