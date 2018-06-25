@@ -36,44 +36,60 @@ def importarLattes(lattes):
                       , anoAttributeName='ANO-DE-INICIO'
                       , anoFimAttributeName='ANO-DE-CONCLUSAO')
     service.processar(tagOrdem=5, tagName='ATUACAO-PROFISSIONAL'
-                      , tituloAttributeName='NOME-INSTITUICAO'
                       , anoAttributeName='ANO-INICIO'
                       , anoFimAttributeName='ANO-FIM'
                       , naturezaAttributeName='OUTRO-VINCULO-INFORMADO'
                       , detalhamentoTagName='VINCULOS'
                       , nomeDoEventoAttributeName='OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO')
+    #todo
     service.processar(tagOrdem=6, tagName='PROJETO-DE-PESQUISA'
                       , tituloAttributeName='NOME-DO-PROJETO'
                       , anoAttributeName='ANO-INICIO'
                       , anoFimAttributeName='ANO-FIM')
     service.processar(tagOrdem=7, tagName='PREMIO-TITULO'
                       , tituloAttributeName='NOME-DO-PREMIO-OU-TITULO'
-                      , anoAttributeName='ANO-DA-PREMIACAO')
+                      , anoAttributeName='ANO-DA-PREMIACAO'
+                      , entidadeTagName='NOME-DA-ENTIDADE-PROMOTORA')
     service.processar(tagOrdem=8, tagName='ARTIGO-PUBLICADO'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-ARTIGO'
                       , tituloAttributeName='TITULO-DO-ARTIGO'
-                      , anoAttributeName='ANO-DO-ARTIGO')
+                      , anoAttributeName='ANO-DO-ARTIGO'
+                      , detalhamentoTagName='DETALHAMENTO-DO-ARTIGO'
+                      , entidadeTagName='TITULO-DO-PERIODICO-OU-REVISTA')
     service.processar(tagOrdem=9, tagName='LIVRO-PUBLICADO-OU-ORGANIZADO'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-LIVRO'
                       , tituloAttributeName='TITULO-DO-LIVRO'
-                      , anoAttributeName='ANO')
+                      , anoAttributeName='ANO'
+                      , detalhamentoTagName='DETALHAMENTO-DO-LIVRO'
+                      , entidadeTagName='NOME-DA-EDITORA')
     service.processar(tagOrdem=10, tagName='CAPITULO-DE-LIVRO-PUBLICADO'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-CAPITULO'
-                      , tituloAttributeName='TITULO-DO-CAPITULO-DO-LIVRO')
+                      , tituloAttributeName='TITULO-DO-CAPITULO-DO-LIVRO'
+                      , detalhamentoTagName='DETALHAMENTO-DO-CAPITULO'
+                      , entidadeTagName='NOME-DA-EDITORA')
     service.processar(tagOrdem=11, tagName='TRABALHO-EM-EVENTOS'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO'
                       , tituloAttributeName='TITULO-DO-TRABALHO'
                       , anoAttributeName='ANO-DO-TRABALHO'
-                      , anoFimAttributeName='ANO-DO-TRABALHO')
+                      , anoFimAttributeName='ANO-DO-TRABALHO'
+                      , detalhamentoTagName='DETALHAMENTO-DO-TRABALHO'
+                      , nomeDoEventoAttributeName=None
+                      , entidadeTagName='NOME-DO-EVENTO')
     service.processar(tagOrdem=12, tagName='APRESENTACAO-DE-TRABALHO'
-                      , dadosBasicosTagName='DADOS-BASICOS-DA-APRESENTACAO-DE-TRABALHO')
+                      , dadosBasicosTagName='DADOS-BASICOS-DA-APRESENTACAO-DE-TRABALHO'
+                      , entidadeTagName='INSTITUICAO-PROMOTORA'
+                      , detalhamentoTagName='DETALHAMENTO-DA-APRESENTACAO-DE-TRABALHO'
+                      , nomeDoEventoAttributeName=None)
     service.processar(tagOrdem=13, tagName='TRABALHO-TECNICO'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-TRABALHO-TECNICO'
                       , tituloAttributeName='TITULO-DO-TRABALHO-TECNICO')
     service.processar(tagOrdem=14, tagName='CURSO-DE-CURTA-DURACAO-MINISTRADO'
-                      , dadosBasicosTagName='DADOS-BASICOS-DE-CURSOS-CURTA-DURACAO-MINISTRADO')
+                      , dadosBasicosTagName='DADOS-BASICOS-DE-CURSOS-CURTA-DURACAO-MINISTRADO'
+                      , entidadeTagName='INSTITUICAO-PROMOTORA-DO-CURSO'
+                      , detalhamentoTagName='DETALHAMENTO-DE-CURSOS-CURTA-DURACAO-MINISTRADO')
     service.processar(tagOrdem=15, tagName='OUTRAS-BANCAS-JULGADORAS'
-                      , dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-BANCAS-JULGADORAS')
+                      , dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-BANCAS-JULGADORAS'
+                      , detalhamentoTagName='DETALHAMENTO-DE-OUTRAS-BANCAS-JULGADORAS')
     service.processar(tagOrdem=16, tagName='PARTICIPACAO-EM-SEMINARIO'
                       , dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-SEMINARIO'
                       , detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-SEMINARIO')
@@ -87,7 +103,9 @@ def importarLattes(lattes):
                       , dadosBasicosTagName='DADOS-BASICOS-DA-PARTICIPACAO-EM-ENCONTRO'
                       , detalhamentoTagName='DETALHAMENTO-DA-PARTICIPACAO-EM-ENCONTRO')
     service.processar(tagOrdem=20, tagName='ORGANIZACAO-DE-EVENTO'
-                      , dadosBasicosTagName='DADOS-BASICOS-DA-ORGANIZACAO-DE-EVENTO')
+                      , dadosBasicosTagName='DADOS-BASICOS-DA-ORGANIZACAO-DE-EVENTO'
+                      , detalhamentoTagName='DETALHAMENTO-DA-ORGANIZACAO-DE-EVENTO'
+                      , entidadeTagName='INSTITUICAO-PROMOTORA')
     service.processar(tagOrdem=21, tagName='OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , detalhamentoTagName='DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS')
