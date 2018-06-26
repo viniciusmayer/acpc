@@ -36,16 +36,18 @@ def importarLattes(lattes):
                       , anoAttributeName='ANO-DE-INICIO'
                       , anoFimAttributeName='ANO-DE-CONCLUSAO')
     service.processar(tagOrdem=5, tagName='ATUACAO-PROFISSIONAL'
+                      , tituloAttributeName=None
                       , anoAttributeName='ANO-INICIO'
                       , anoFimAttributeName='ANO-FIM'
                       , naturezaAttributeName='OUTRO-VINCULO-INFORMADO'
                       , detalhamentoTagName='VINCULOS'
                       , nomeDoEventoAttributeName='OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO')
-    #todo
-    service.processar(tagOrdem=6, tagName='PROJETO-DE-PESQUISA'
+    service.processar(tagOrdem=6, tagName='PARTICIPACAO-EM-PROJETO'
                       , tituloAttributeName='NOME-DO-PROJETO'
+                      , dadosBasicosTagName='PROJETO-DE-PESQUISA'
                       , anoAttributeName='ANO-INICIO'
-                      , anoFimAttributeName='ANO-FIM')
+                      , anoFimAttributeName='ANO-FIM'
+                      , entidadeTagName='NOME-ORGAO')
     service.processar(tagOrdem=7, tagName='PREMIO-TITULO'
                       , tituloAttributeName='NOME-DO-PREMIO-OU-TITULO'
                       , anoAttributeName='ANO-DA-PREMIACAO'
@@ -161,10 +163,10 @@ tmp = 'files/tmp/'
 pgpass = '/home/eleonorvinicius/.pgpass'
 backup = '/home/eleonorvinicius/Dropbox/Backup/'
 if __name__ == '__main__':
-    print()
-    print('inicio')
     j = len(sys.argv)
     if (j > 1):
+        print()
+        print('inicio')
         for i in range(1, len(sys.argv)):
             comando = sys.argv[i]
             if (comando == 'importarlattes'):
