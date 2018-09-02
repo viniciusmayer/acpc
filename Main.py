@@ -156,7 +156,7 @@ def ajuda():
 
 
 lattes = 'files/lattes/curriculo.xml'
-origem = 'files/pdfs/'
+origem = '/home/eleonorvinicius/Dropbox/Shared-Gmail/impressao-lattes/'
 destino = 'files/uploads/'
 assinatura = 'files/assinatura.jpg'
 tmp = 'files/tmp/'

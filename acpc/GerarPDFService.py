@@ -22,6 +22,7 @@ class GerarPDFService(object):
     def gerarCabecalho(self, largura, altura, pagina, numeroPaginas, assinatura, tmp):
         arquivo = '{0}{1}'.format(tmp, str(uuid.uuid4()))
         c = canvas.Canvas(arquivo, pagesize=(largura, altura))
+
         # fundo da paginacao
         color = Color(255, 255, 255, alpha=0.5)
         c.setFillColor(color)
@@ -30,8 +31,16 @@ class GerarPDFService(object):
         # paginacao
         c.setFillColor(Color(0, 0, 0, alpha=1))
         c.drawRightString(largura - (0.75 * cm), altura - (1 * cm), '{0}/{1}'.format(pagina, numeroPaginas))
+        
+        # fundo da assinatura
+        color = Color(255, 255, 255, alpha=0.5)
+        c.setFillColor(color)
+        c.setStrokeColor(color)
+        c.rect(largura - (2 * cm), (0.5 * cm), (1.5 * cm), (1.5 * cm), fill=1)
         # assinatura
-        c.drawImage(assinatura, largura - (2 * cm), 0, width=(2 * cm), height=(2 * cm))
+        c.setFillColor(Color(0, 0, 0, alpha=1))
+        c.drawImage(assinatura, largura - (2 * cm), (0.5 * cm), width=(1.5 * cm), height=(1.5 * cm))
+        
         # gerar pagina
         c.showPage()
         c.save()
