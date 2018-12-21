@@ -1,14 +1,28 @@
 from xml.dom import minidom
 
 import psycopg2
+import csv
 
 
 class ImportarLattesService(object):
     
-    def __init__(self, lattes):
-        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-        self.cursor = self.conn.cursor()
+    def __init__(self, lattes, destino='FILE'):
+        self.conn = None
+        self.cursor = None
+        self.dictWriter = None 
+        if (destino == 'DATABASE'):
+            self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+            self.cursor = self.conn.cursor()
+        elif (destino == 'FILE'):
+            with open('lattesitens.csv', mode='w') as arquivoDestino:
+                fieldnames = ['titulo', 'ano', 'anoFim', 'natureza', 'entidade', 'tag']
+                self.dictWriter = csv.DictWriter(arquivoDestino, fieldnames=fieldnames, dialect='excel_tab')
+                self.dictWriter.writeheader()
         self.arquivo = minidom.parse(lattes)
+
+    def close(self):
+        if (self.dictWriter is not None):
+            self.dictWriter.close()
 
     def inserirEntidade(self, nome):
         descricao = nome
@@ -76,7 +90,11 @@ class ImportarLattesService(object):
         else:
             print('trabalho ignorado: {0}, {1}, {2}, {3}, {4}, {5}'.format(titulo, ano, anoFim, natureza, entidade, tag))                
 
-    def extrairDados(self, elemento, ano, anoTag, anoFim, anoFimTag, titulo, tituloTag, natureza, naturezaTag, entidade, entidadeTagName):
+    def extrairDados(self, elemento, ano, anoTag
+                     , anoFim, anoFimTag
+                     , titulo, tituloTag
+                     , natureza, naturezaTag
+                     , entidade, entidadeTagName):
         _ano = elemento.getAttribute(anoTag).strip()
         ano = _ano if _ano else ano
         _anoFim = ano if not anoFimTag else elemento.getAttribute(anoFimTag).strip()
@@ -138,10 +156,18 @@ class ImportarLattesService(object):
         return entidade
 
     def inserir(self, titulo, ano, anoFim, natureza, entidade, tagName, tagOrdem):
-        tagName = self.inserirTag(tagName, tagOrdem)
-        natureza = self.inserirNatureza(natureza)
-        if entidade: entidade = self.inserirEntidade(entidade)
-        self.inserirTrabalho(titulo, ano, anoFim, natureza, entidade, tagName)
+        if (self.arquivoDestino):
+            self.dictWriter.writerow({'titulo':titulo
+                                      ,'ano':ano
+                                      ,'anoFim':anoFim
+                                      ,'natureza':natureza
+                                      ,'entidade':entidade
+                                      ,'tag':tagName})
+        elif (self.conn is not None and self.cursor is not None):
+            tagName = self.inserirTag(tagName, tagOrdem)
+            natureza = self.inserirNatureza(natureza)
+            if entidade: entidade = self.inserirEntidade(entidade)
+            self.inserirTrabalho(titulo, ano, anoFim, natureza, entidade, tagName)
 
     def processar(self, tagName, tagOrdem=None
                   , dadosBasicosTagName=None

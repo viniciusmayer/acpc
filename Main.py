@@ -35,23 +35,26 @@ def importarLattes(lattes):
                       , tituloAttributeName='NOME-CURSO'
                       , anoAttributeName='ANO-DE-INICIO'
                       , anoFimAttributeName='ANO-DE-CONCLUSAO')
+    service.processar(tagOrdem=7, tagName='PREMIO-TITULO'
+                      , tituloAttributeName='NOME-DO-PREMIO-OU-TITULO'
+                      , anoAttributeName='ANO-DA-PREMIACAO'
+                      , entidadeTagName='NOME-DA-ENTIDADE-PROMOTORA')
+    #inicio detalhamentoTagName
     service.processar(tagOrdem=5, tagName='ATUACAO-PROFISSIONAL'
-                      , tituloAttributeName=None
+                      , tituloAttributeName=None #FIXME informar nome do evento?
                       , anoAttributeName='ANO-INICIO'
                       , anoFimAttributeName='ANO-FIM'
                       , naturezaAttributeName='OUTRO-VINCULO-INFORMADO'
                       , detalhamentoTagName='VINCULOS'
                       , nomeDoEventoAttributeName='OUTRO-ENQUADRAMENTO-FUNCIONAL-INFORMADO')
+    #inicio dadosBasicosTagName
     service.processar(tagOrdem=6, tagName='PARTICIPACAO-EM-PROJETO'
                       , tituloAttributeName='NOME-DO-PROJETO'
                       , dadosBasicosTagName='PROJETO-DE-PESQUISA'
                       , anoAttributeName='ANO-INICIO'
                       , anoFimAttributeName='ANO-FIM'
                       , entidadeTagName='NOME-ORGAO')
-    service.processar(tagOrdem=7, tagName='PREMIO-TITULO'
-                      , tituloAttributeName='NOME-DO-PREMIO-OU-TITULO'
-                      , anoAttributeName='ANO-DA-PREMIACAO'
-                      , entidadeTagName='NOME-DA-ENTIDADE-PROMOTORA')
+    #inicio 3
     service.processar(tagOrdem=8, tagName='ARTIGO-PUBLICADO'
                       , dadosBasicosTagName='DADOS-BASICOS-DO-ARTIGO'
                       , tituloAttributeName='TITULO-DO-ARTIGO'
@@ -111,6 +114,7 @@ def importarLattes(lattes):
     service.processar(tagOrdem=21, tagName='OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , detalhamentoTagName='DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS')
+    service.close()
     print('fim - importar lattes')
     
 def importarPDFs(origem, destino):
@@ -142,17 +146,17 @@ def fazerBackup(pgpass, maquina, porta, banco, usuario, quando, destino):
     print('fim - fazer backup')
 
 def ajuda():
-    print('= help =')
-    print('command: python3 Main.py [option]')
-    print('options:')
-    print('        importarlattes')
-    print('        importarpdfs')
-    print('        gerarevento')
-    print('        gerarpdf')
-    print('        fazerbackup')
-    print('        ajuda')
-    print('example: python3 Main.py importarlattes importarpfds gerarevento gerarpdf')
-    print('example: python3 Main.py importarpfds gerarpdf')
+    print('= HELP =')
+    print('Command: python3 Main.py [option]')
+    print('Options:')
+    print('\t importarlattes')
+    print('\t importarpdfs')
+    print('\t gerarevento')
+    print('\t gerarpdf')
+    print('\t fazerbackup')
+    print('\t ajuda')
+    print('Example: python3 Main.py importarlattes importarpfds gerarevento gerarpdf')
+    print('Example: python3 Main.py importarpfds gerarpdf')
 
 
 lattes = 'files/lattes/curriculo.xml'
