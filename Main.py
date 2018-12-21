@@ -11,9 +11,9 @@ from acpc.ImportarLattesService import ImportarLattesService
 from acpc.ImportarPDFsService import ImportarPDFsService
 
 
-def importarLattes(lattes):
+def importarLattes(lattes, destino):
     print()
-    print('inicio - importar lattes')
+    print('inicio - importar lattes', destino)
     service = ImportarLattesService(lattes)
     service.processar(tagOrdem=0, tagName='GRADUACAO'
                       , tituloAttributeName='TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO'
@@ -154,6 +154,7 @@ def ajuda():
     print('\t gerarevento')
     print('\t gerarpdf')
     print('\t fazerbackup')
+    print('\t bancodedados - para escrever a saida em banco de dados. Valor padrao: arquivo')
     print('\t ajuda')
     print('Example: python3 Main.py importarlattes importarpfds gerarevento gerarpdf')
     print('Example: python3 Main.py importarpfds gerarpdf')
@@ -171,20 +172,40 @@ if __name__ == '__main__':
     if (j > 1):
         print()
         print('inicio')
+        executarImportarLattes = False
+        executarGerarPDF = False
+        executarImportarPDFs = False
+        executarGerarEvento = False
+        executarFazerBackup = False
+        destino = 'FILE'
         for i in range(1, len(sys.argv)):
             comando = sys.argv[i]
             if (comando == 'importarlattes'):
-                importarLattes(lattes)
+                executarImportarLattes = True
             elif (comando == 'importarpdfs'):
-                importarPDFs(origem, destino)
+                executarImportarPDFs = True
             elif (comando == 'gerarpdf'):
-                gerarPDF(destino, assinatura, tmp)
+                executarGerarPDF = True
             elif (comando == 'gerarevento'):
-                gerarEvento(str(uuid.uuid4()), datetime.today())
+                executarGerarEvento = True
             elif (comando == 'fazerbackup'):
-                fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today(), backup)
+                executarFazerBackup = True
+            elif (comando == 'bancodedados'):
+                destino = 'DATABASE'
             else:
                 ajuda()
+        if (executarImportarLattes):
+            importarLattes(lattes, destino)
+        elif (executarImportarPDFs):
+            importarPDFs(origem, destino)
+        elif (executarGerarPDF):
+            gerarPDF(destino, assinatura, tmp)
+        elif (executarGerarEvento):
+            gerarEvento(str(uuid.uuid4()), datetime.today())
+        elif (executarFazerBackup):
+            fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today(), backup)
+        else:
+            ajuda()
     else:
         ajuda()
     if os.path.exists(tmp):
