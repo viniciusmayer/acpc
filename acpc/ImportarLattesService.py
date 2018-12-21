@@ -1,7 +1,7 @@
+import csv
 from xml.dom import minidom
 
 import psycopg2
-import csv
 
 
 class ImportarLattesService(object):
@@ -14,9 +14,10 @@ class ImportarLattesService(object):
             self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
             self.cursor = self.conn.cursor()
         elif (destino == 'FILE'):
-            with open('lattesitens.csv', mode='w') as arquivoDestino:
+            self.arquivoDestino = open('lattesitens.csv', mode='w')
+            with self.arquivoDestino:
                 fieldnames = ['titulo', 'ano', 'anoFim', 'natureza', 'entidade', 'tag']
-                self.dictWriter = csv.DictWriter(arquivoDestino, fieldnames=fieldnames, dialect='excel_tab')
+                self.dictWriter = csv.DictWriter(self.arquivoDestino, fieldnames=fieldnames, dialect='excel-tab')
                 self.dictWriter.writeheader()
         self.arquivo = minidom.parse(lattes)
 
