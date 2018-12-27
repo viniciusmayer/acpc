@@ -11,10 +11,10 @@ from acpc.ImportarLattesService import ImportarLattesService
 from acpc.ImportarPDFsService import ImportarPDFsService
 
 
-def importarLattes(lattes, destino):
+def importarLattes(lattes, armazenamento):
     print()
-    print('inicio - importar lattes', destino)
-    service = ImportarLattesService(lattes)
+    print('inicio - importar lattes', armazenamento)
+    service = ImportarLattesService(lattes, armazenamento)
     service.processar(tagOrdem=0, tagName='GRADUACAO'
                       , tituloAttributeName='TITULO-DO-TRABALHO-DE-CONCLUSAO-DE-CURSO'
                       , anoAttributeName='ANO-DE-INICIO'
@@ -159,7 +159,7 @@ def ajuda():
 
 
 lattes = 'files/lattes/curriculo.xml'
-origem = '/home/eleonorvinicius/Dropbox/Shared-Gmail/impressao-lattes/'
+origem = 'files/pdfs/'
 destino = 'files/uploads/'
 assinatura = 'files/assinatura.jpg'
 tmp = 'files/tmp/'
@@ -175,13 +175,15 @@ if __name__ == '__main__':
         executarImportarPDFs = False
         executarGerarEvento = False
         executarFazerBackup = False
-        destino = 'FILE'
+        armazenamento = 'FILE'
         nomeEvento = None
+        comandoChave, comandoValor = None, None
         for i in range(1, len(sys.argv)):
-            comandoChave, comandoValor = sys.argv[i].split('=')
+            if (sys.argv[i].find('=') > 1): comandoChave, comandoValor = sys.argv[i].split('=')
+            else: comandoChave = sys.argv[i]
             if (comandoChave == 'importarlattes'):
                 executarImportarLattes = True
-                if (comandoValor == 'bancodedados'): destino = 'DATABASE'
+                if (comandoValor == 'bancodedados'): armazenamento = 'DATABASE'
             elif (comandoChave == 'importarpdfs'): executarImportarPDFs = True
             elif (comandoChave == 'gerarpdf'):
                 executarGerarPDF = True
@@ -189,7 +191,7 @@ if __name__ == '__main__':
             elif (comandoChave == 'gerarevento'): executarGerarEvento = True
             elif (comandoChave == 'fazerbackup'): executarFazerBackup = True
             else: ajuda()
-        if (executarImportarLattes): importarLattes(lattes, destino)
+        if (executarImportarLattes): importarLattes(lattes, armazenamento)
         elif (executarImportarPDFs): importarPDFs(origem, destino)
         elif (executarGerarPDF): gerarPDF(destino, assinatura, tmp, nomeEvento)
         elif (executarGerarEvento): gerarEvento(str(uuid.uuid4()), datetime.today())
