@@ -154,21 +154,22 @@ class ImportarLattesService(object):
         return entidade
 
     def inserir(self, titulo, ano, anoFim, natureza, entidade, tagName, tagOrdem):
-        if (self.nomeArquivoDestino is not None):
+        if (self.connection is not None and self.cursor is not None):
+            tagName = self.inserirTag(tagName, tagOrdem)
+            natureza = self.inserirNatureza(natureza)
+            if entidade:
+                entidade = self.inserirEntidade(entidade)
+            self.inserirTrabalho(titulo, ano, anoFim, natureza, entidade, tagName)
+        elif (self.nomeArquivoDestino is not None):
             with open(self.nomeArquivoDestino, mode='a', newline='') as arquivoDestino:
                 writer = csv.writer(arquivoDestino, dialect='myDialect')
                 writer.writerow([titulo, ano, anoFim, natureza, entidade, tagName])
                 arquivoDestino.close()
-        elif (self.connection is not None and self.cursor is not None):
-            tagName = self.inserirTag(tagName, tagOrdem)
-            natureza = self.inserirNatureza(natureza)
-            if entidade: entidade = self.inserirEntidade(entidade)
-            self.inserirTrabalho(titulo, ano, anoFim, natureza, entidade, tagName)
 
     def processar(self, tagName, tagOrdem=None
                   , dadosBasicosTagName=None
                   , tituloAttributeName='TITULO'
-                  , anoAttributeName='ANO'
+                  , anoAttributeName='ANO' 
                   , anoFimAttributeName=None
                   , naturezaAttributeName='NATUREZA'
                   , detalhamentoTagName=None
