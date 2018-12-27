@@ -4,13 +4,13 @@ import psycopg2
 class GerarEventoService(object):
 
     def __init__(self):
-        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-        self.cursor = self.conn.cursor()
+        self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+        self.cursor = self.connection.cursor()
     
     def processar(self, nome, quando):
         insertEvento = 'INSERT INTO public.trabalhos_evento(nome, quando) VALUES (\'{0}\', \'{1}\')'.format(nome, quando.strftime('%Y-%m-%d'))
         self.cursor.execute(insertEvento)
-        self.conn.commit()
+        self.connection.commit()
         print('evento inserido: {0}, {1}'.format(nome, quando.strftime('%Y-%m-%d')))
                 
         selectEvento = 'SELECT id FROM public.trabalhos_evento where nome = \'{0}\' and quando = \'{1}\''.format(nome, quando.strftime('%Y-%m-%d'))
@@ -25,6 +25,6 @@ class GerarEventoService(object):
         for row in rows:
             idTrabalho = row[0]
             self.cursor.execute(insertEventoTrabalho.format(ordem, selectEvento, idTrabalho))
-            self.conn.commit()
+            self.connection.commit()
             print('eventoTrabalho inserido: {0}, {1}, {2}'.format(ordem, '-idEvento-', idTrabalho))
             ordem += 1
