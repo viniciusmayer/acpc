@@ -54,8 +54,8 @@ class GerarPDFService(object):
                                                 inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
                                                 inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
                                             group by e.id, e.nome, e.quando'
-        if (nomeEvento is not None): selectEventoQuandoENumeroPaginas.format('and e.nome = {0}'.format(nomeEvento))
-        else: selectEventoQuandoENumeroPaginas.format('and 1=1')
+        if (nomeEvento is not None): selectEventoQuandoENumeroPaginas = selectEventoQuandoENumeroPaginas.format('and e.nome = \'{0}\''.format(nomeEvento))
+        else: selectEventoQuandoENumeroPaginas = selectEventoQuandoENumeroPaginas.format('and 1=1')
         self.cursor.execute(selectEventoQuandoENumeroPaginas)
         rows = self.cursor.fetchall()
         for row in rows:
