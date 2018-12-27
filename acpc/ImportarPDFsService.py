@@ -8,8 +8,8 @@ class ImportarPDFsService(object):
     def __init__(self, destino):
         if not os.path.exists(destino):
             os.makedirs(destino)
-        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-        self.cursor = self.conn.cursor()
+        self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+        self.cursor = self.connection.cursor()
 
     def processar(self, origem, destino):
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
@@ -23,7 +23,7 @@ class ImportarPDFsService(object):
                     shutil.copy2(arquivo, destino)
                     insert = 'INSERT INTO public.trabalhos_arquivo(arquivo, paginas) VALUES (\'{0}\', {1})'.format(nomeArquivoOrigem, numeroPaginas)
                     self.cursor.execute(insert)
-                    self.conn.commit()
+                    self.connection.commit()
                     print('arquivo inserido: {0}'.format(nomeArquivoOrigem))
                 else:
                     print('arquivo ignorado: {0}'.format(nomeArquivoOrigem))
