@@ -123,11 +123,11 @@ def importarPDFs(origem, destino):
     service.processar(origem, destino)
     print('fim - importar pdfs')
 
-def gerarPDF(origem, assinatura, tmp):
+def gerarPDF(origem, assinatura, tmp, nomeEvento):
     print()
     print('inicio - gerar pdf')
     service = GerarPDFService(origem, tmp)
-    service.processar(assinatura, tmp)
+    service.processar(assinatura, tmp, nomeEvento)
     print('fim - gerar pdf')
 
 def gerarEvento(nome, quando):
@@ -148,12 +148,11 @@ def ajuda():
     print('= HELP =')
     print('Command: python3 Main.py [option]')
     print('Options:')
-    print('\t importarlattes')
+    print('\t importarlattes[=bancodedados - para escrever a saida em banco de dados. Valor padrao: arquivo]')
     print('\t importarpdfs')
-    print('\t gerarevento')
+    print('\t gerarevento[=<nome do evento>] - para especificar o event')
     print('\t gerarpdf')
     print('\t fazerbackup')
-    print('\t bancodedados - para escrever a saida em banco de dados. Valor padrao: arquivo')
     print('\t ajuda')
     print('Example: python3 Main.py importarlattes importarpfds gerarevento gerarpdf')
     print('Example: python3 Main.py importarpfds gerarpdf')
@@ -177,36 +176,25 @@ if __name__ == '__main__':
         executarGerarEvento = False
         executarFazerBackup = False
         destino = 'FILE'
+        nomeEvento = None
         for i in range(1, len(sys.argv)):
-            comando = sys.argv[i]
-            if (comando == 'importarlattes'):
+            comandoChave, comandoValor = sys.argv[i].split('=')
+            if (comandoChave == 'importarlattes'):
                 executarImportarLattes = True
-            elif (comando == 'importarpdfs'):
-                executarImportarPDFs = True
-            elif (comando == 'gerarpdf'):
+                if (comandoValor == 'bancodedados'): destino = 'DATABASE'
+            elif (comandoChave == 'importarpdfs'): executarImportarPDFs = True
+            elif (comandoChave == 'gerarpdf'):
                 executarGerarPDF = True
-            elif (comando == 'gerarevento'):
-                executarGerarEvento = True
-            elif (comando == 'fazerbackup'):
-                executarFazerBackup = True
-            elif (comando == 'bancodedados'):
-                destino = 'DATABASE'
-            else:
-                ajuda()
-        if (executarImportarLattes):
-            importarLattes(lattes, destino)
-        elif (executarImportarPDFs):
-            importarPDFs(origem, destino)
-        elif (executarGerarPDF):
-            gerarPDF(destino, assinatura, tmp)
-        elif (executarGerarEvento):
-            gerarEvento(str(uuid.uuid4()), datetime.today())
-        elif (executarFazerBackup):
-            fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today(), backup)
-        else:
-            ajuda()
-    else:
-        ajuda()
-    if os.path.exists(tmp):
-        shutil.rmtree(tmp)
+                nomeEvento = comandoValor
+            elif (comandoChave == 'gerarevento'): executarGerarEvento = True
+            elif (comandoChave == 'fazerbackup'): executarFazerBackup = True
+            else: ajuda()
+        if (executarImportarLattes): importarLattes(lattes, destino)
+        elif (executarImportarPDFs): importarPDFs(origem, destino)
+        elif (executarGerarPDF): gerarPDF(destino, assinatura, tmp, nomeEvento)
+        elif (executarGerarEvento): gerarEvento(str(uuid.uuid4()), datetime.today())
+        elif (executarFazerBackup): fazerBackup(pgpass, 'localhost', '5432', 'acpc', 'acpc', datetime.today(), backup)
+        else: ajuda()
+    else: ajuda()
+    if os.path.exists(tmp): shutil.rmtree(tmp)
     print('fim')

@@ -110,22 +110,18 @@ class ImportarLattesService(object):
         a = entidade.find(caracter)
         if a > 0:
             b = len(entidade) - (a + 2)
-            if a > b:
-                entidade = entidade[(a + 2):len(entidade)]
-            else:
-                entidade = entidade[0:a]
+            if a > b: entidade = entidade[(a + 2):len(entidade)]
+            else: entidade = entidade[0:a]
         return entidade
 
     def tratarDoisPontos(self, caracter, entidade):
         a = entidade.find(caracter)
-        if a > 0:
-            entidade = entidade[0:a]
+        if a > 0: entidade = entidade[0:a]
         return entidade
     
     def tratarVirgula(self, caracter, entidade):
         a = entidade.find(caracter)
-        if a > 0:
-            entidade = entidade[(a+2):len(entidade)]
+        if a > 0: entidade = entidade[(a+2):len(entidade)]
         return entidade
     
     def tratarEntidade(self, entidade):
@@ -157,8 +153,7 @@ class ImportarLattesService(object):
         if (self.connection is not None and self.cursor is not None):
             tagName = self.inserirTag(tagName, tagOrdem)
             natureza = self.inserirNatureza(natureza)
-            if entidade:
-                entidade = self.inserirEntidade(entidade)
+            if entidade: entidade = self.inserirEntidade(entidade)
             self.inserirTrabalho(titulo, ano, anoFim, natureza, entidade, tagName)
         elif (self.nomeArquivoDestino is not None):
             with open(self.nomeArquivoDestino, mode='a', newline='') as arquivoDestino:

@@ -6,8 +6,7 @@ from PyPDF2 import PdfFileReader
 class ImportarPDFsService(object):
 
     def __init__(self, destino):
-        if not os.path.exists(destino):
-            os.makedirs(destino)
+        if not os.path.exists(destino): os.makedirs(destino)
         self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
         self.cursor = self.connection.cursor()
 

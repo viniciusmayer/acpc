@@ -11,8 +11,7 @@ class GerarPDFService(object):
     def __init__(self, origem, tmp):
         self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
         self.cursor = self.connection.cursor()
-        if not os.path.exists(tmp):
-            os.makedirs(tmp)
+        if not os.path.exists(tmp): os.makedirs(tmp)
         self.arquivos = {}
         for arquivo in glob.iglob(origem + '**/*.pdf', recursive=True):
             pdfFile = PdfFileReader(open(arquivo, 'rb'))
@@ -47,13 +46,16 @@ class GerarPDFService(object):
         cabecalho = PdfFileReader(open(arquivo, 'rb'))
         return cabecalho.getPage(0)
 
-    def processar(self, assinatura, tmp):
+    def processar(self, assinatura, tmp, nomeEvento):
         selectEventoQuandoENumeroPaginas = 'select e.id, e.nome, e.quando, sum(a.paginas) \
                                             from public.trabalhos_eventotrabalho et \
                                                 inner join public.trabalhos_evento e on e.id=et.evento_id \
+                                                    {0} \
                                                 inner join public.trabalhos_trabalho t on t.id=et.trabalho_id \
                                                 inner join public.trabalhos_arquivo a on a.id=t.arquivo_id \
                                             group by e.id, e.nome, e.quando'
+        if (nomeEvento is not None): selectEventoQuandoENumeroPaginas.format('and e.nome = {0}'.format(nomeEvento))
+        else: selectEventoQuandoENumeroPaginas.format('and 1=1')
         self.cursor.execute(selectEventoQuandoENumeroPaginas)
         rows = self.cursor.fetchall()
         for row in rows:
