@@ -20,7 +20,7 @@ class ImportarPDFsService(object):
                 self.cursor.execute(select)
                 if (self.cursor.rowcount == 0):
                     shutil.copy2(arquivo, destino)
-                    insert = 'INSERT INTO public.trabalhos_arquivo(arquivo, paginas) VALUES (\'{0}\', {1})'.format(nomeArquivoOrigem, numeroPaginas)
+                    insert = 'INSERT INTO public.trabalhos_arquivo(arquivo, paginas, ativo) VALUES (\'{0}\', {1}, true)'.format(nomeArquivoOrigem, numeroPaginas)
                     self.cursor.execute(insert)
                     self.connection.commit()
                     print('arquivo inserido: {0}'.format(nomeArquivoOrigem))
