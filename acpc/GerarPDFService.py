@@ -23,7 +23,7 @@ class GerarPDFService(object):
         c = canvas.Canvas(arquivo, pagesize=(largura, altura))
 
         # fundo da paginacao
-        color = Color(255, 255, 255, alpha=0.5)
+        color = Color(255, 255, 255, alpha=0)
         c.setFillColor(color)
         c.setStrokeColor(color)
         c.rect(largura - (2.5 * cm), altura - (1.1 * cm), (1.9 * cm), (0.5 * cm), fill=1)
@@ -32,10 +32,10 @@ class GerarPDFService(object):
         c.drawRightString(largura - (0.75 * cm), altura - (1 * cm), '{0}/{1}'.format(pagina, numeroPaginas))
         
         # fundo da assinatura
-        color = Color(255, 255, 255, alpha=0.5)
-        c.setFillColor(color)
-        c.setStrokeColor(color)
-        c.rect(largura - (2 * cm), (0.5 * cm), (1.5 * cm), (1.5 * cm), fill=1)
+        #color = Color(255, 255, 255, alpha=0.5)
+        #c.setFillColor(color)
+        #c.setStrokeColor(color)
+        #c.rect(largura - (2 * cm), (0.5 * cm), (1.5 * cm), (1.5 * cm), fill=1)
         # assinatura
         c.setFillColor(Color(0, 0, 0, alpha=1))
         c.drawImage(assinatura, largura - (2 * cm), (0.5 * cm), width=(1.5 * cm), height=(1.5 * cm))
