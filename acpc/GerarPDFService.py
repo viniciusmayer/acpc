@@ -9,8 +9,8 @@ from reportlab.pdfgen import canvas
 class GerarPDFService(object):
 
     def __init__(self, origem, tmp):
-        self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-        self.cursor = self.conn.cursor()
+        self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+        self.cursor = self.connection.cursor()
         if not os.path.exists(tmp):
             os.makedirs(tmp)
         self.arquivos = {}
