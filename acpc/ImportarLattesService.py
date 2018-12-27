@@ -7,23 +7,20 @@ import psycopg2
 class ImportarLattesService(object):
     
     def __init__(self, lattes, destino='FILE'):
-        self.conn = None
+        self.connection = None
         self.cursor = None
-        self.dictWriter = None 
+        self.nomeArquivoDestino = None
+        csv.register_dialect('myDialect', delimiter = ';', quotechar = '"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
         if (destino == 'DATABASE'):
-            self.conn = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
-            self.cursor = self.conn.cursor()
+            self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
+            self.cursor = self.connection.cursor()
         elif (destino == 'FILE'):
-            self.arquivoDestino = open('lattesitens.csv', mode='w')
-            with self.arquivoDestino:
-                fieldnames = ['titulo', 'ano', 'anoFim', 'natureza', 'entidade', 'tag']
-                self.dictWriter = csv.DictWriter(self.arquivoDestino, fieldnames=fieldnames, dialect='excel-tab')
-                self.dictWriter.writeheader()
+            self.nomeArquivoDestino = 'lattesitens.csv'
+            with open(self.nomeArquivoDestino, mode='w', newline='') as arquivoDestino:
+                writer = csv.writer(arquivoDestino, dialect='myDialect')
+                writer.writerow(['titulo', 'ano', 'anoFim', 'natureza', 'entidade', 'tag'])
+                arquivoDestino.close()
         self.arquivo = minidom.parse(lattes)
-
-    def close(self):
-        if (self.dictWriter is not None):
-            self.dictWriter.close()
 
     def inserirEntidade(self, nome):
         descricao = nome
@@ -33,7 +30,7 @@ class ImportarLattesService(object):
         if (self.cursor.rowcount == 0):
             insert = 'INSERT INTO public.trabalhos_entidade(nome, descricao) VALUES (\'{n}\', \'{d}\');'.format(n=nome, d=descricao)
             self.cursor.execute(insert)
-            self.conn.commit()
+            self.connection.commit()
             print('entidade inserida: {n}'.format(n=nome))
         else:
             print('entidade ignorada: {n}'.format(n=nome))
@@ -49,7 +46,7 @@ class ImportarLattesService(object):
                                                                                                                       , d=descricao
                                                                                                                       , o=ordem)
             self.cursor.execute(insert)
-            self.conn.commit()
+            self.connection.commit()
             print('tag inserido: {0}, {1}'.format(nome, ordem))
         else:
             print('tag ignorado: {0}, {1}'.format(nome, ordem))        
@@ -63,7 +60,7 @@ class ImportarLattesService(object):
         if (self.cursor.rowcount == 0):
             insert = 'insert into public.trabalhos_natureza(nome, descricao) values (\'{n}\', \'{d}\')'.format(n=nome, d=descricao)
             self.cursor.execute(insert)
-            self.conn.commit()
+            self.connection.commit()
             print('natureza inserido: {0}'.format(nome))
         else:
             print('natureza ignorado: {0}'.format(nome))
@@ -86,7 +83,7 @@ class ImportarLattesService(object):
                                                                           , na=selectNatureza.format(natureza)
                                                                           , e=selectEntidade.format(entidade))
             self.cursor.execute(insert)
-            self.conn.commit()
+            self.connection.commit()
             print('trabalho inserido: {0}, {1}, {2}, {3}, {4}, {5}'.format(titulo, ano, anoFim, natureza, entidade, tag))
         else:
             print('trabalho ignorado: {0}, {1}, {2}, {3}, {4}, {5}'.format(titulo, ano, anoFim, natureza, entidade, tag))                
@@ -157,14 +154,12 @@ class ImportarLattesService(object):
         return entidade
 
     def inserir(self, titulo, ano, anoFim, natureza, entidade, tagName, tagOrdem):
-        if (self.arquivoDestino):
-            self.dictWriter.writerow({'titulo':titulo
-                                      ,'ano':ano
-                                      ,'anoFim':anoFim
-                                      ,'natureza':natureza
-                                      ,'entidade':entidade
-                                      ,'tag':tagName})
-        elif (self.conn is not None and self.cursor is not None):
+        if (self.nomeArquivoDestino is not None):
+            with open(self.nomeArquivoDestino, mode='a', newline='') as arquivoDestino:
+                writer = csv.writer(arquivoDestino, dialect='myDialect')
+                writer.writerow([titulo, ano, anoFim, natureza, entidade, tagName])
+                arquivoDestino.close()
+        elif (self.connection is not None and self.cursor is not None):
             tagName = self.inserirTag(tagName, tagOrdem)
             natureza = self.inserirNatureza(natureza)
             if entidade: entidade = self.inserirEntidade(entidade)
