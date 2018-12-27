@@ -114,7 +114,6 @@ def importarLattes(lattes, destino):
     service.processar(tagOrdem=21, tagName='OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , dadosBasicosTagName='DADOS-BASICOS-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS'
                       , detalhamentoTagName='DETALHAMENTO-DE-OUTRAS-PARTICIPACOES-EM-EVENTOS-CONGRESSOS')
-    service.close()
     print('fim - importar lattes')
     
 def importarPDFs(origem, destino):
