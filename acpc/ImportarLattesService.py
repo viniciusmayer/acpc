@@ -6,15 +6,15 @@ import psycopg2
 
 class ImportarLattesService(object):
     
-    def __init__(self, lattes, destino='FILE'):
+    def __init__(self, lattes, armazenamento):
         self.connection = None
         self.cursor = None
         self.nomeArquivoDestino = None
         csv.register_dialect('myDialect', delimiter = ';', quotechar = '"', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-        if (destino == 'DATABASE'):
+        if (armazenamento == 'DATABASE'):
             self.connection = psycopg2.connect("dbname='acpc' user='acpc' host='localhost' password='v1n1c1u5'")
             self.cursor = self.connection.cursor()
-        elif (destino == 'FILE'):
+        elif (armazenamento == 'FILE'):
             self.nomeArquivoDestino = 'lattesitens.csv'
             with open(self.nomeArquivoDestino, mode='w', newline='') as arquivoDestino:
                 writer = csv.writer(arquivoDestino, dialect='myDialect')
@@ -28,7 +28,7 @@ class ImportarLattesService(object):
         select = 'SELECT id FROM public.trabalhos_entidade where nome = \'{n}\''.format(n=nome)
         self.cursor.execute(select)
         if (self.cursor.rowcount == 0):
-            insert = 'INSERT INTO public.trabalhos_entidade(nome, descricao) VALUES (\'{n}\', \'{d}\');'.format(n=nome, d=descricao)
+            insert = 'INSERT INTO public.trabalhos_entidade(nome, descricao, ativo) VALUES (\'{n}\', \'{d}\', true);'.format(n=nome, d=descricao)
             self.cursor.execute(insert)
             self.connection.commit()
             print('entidade inserida: {n}'.format(n=nome))
@@ -42,7 +42,7 @@ class ImportarLattesService(object):
         select = 'select id from public.trabalhos_tag where nome = \'{0}\''.format(nome)
         self.cursor.execute(select)
         if (self.cursor.rowcount == 0):
-            insert = 'insert into public.trabalhos_tag(nome, descricao, ordem) values (\'{n}\', \'{d}\', {o})'.format(n=nome
+            insert = 'insert into public.trabalhos_tag(nome, descricao, ordem, ativo) values (\'{n}\', \'{d}\', {o}, true)'.format(n=nome
                                                                                                                       , d=descricao
                                                                                                                       , o=ordem)
             self.cursor.execute(insert)
@@ -58,7 +58,7 @@ class ImportarLattesService(object):
         select = 'select id from public.trabalhos_natureza where nome = \'{0}\''.format(nome)
         self.cursor.execute(select)
         if (self.cursor.rowcount == 0):
-            insert = 'insert into public.trabalhos_natureza(nome, descricao) values (\'{n}\', \'{d}\')'.format(n=nome, d=descricao)
+            insert = 'insert into public.trabalhos_natureza(nome, descricao, ativo) values (\'{n}\', \'{d}\', true)'.format(n=nome, d=descricao)
             self.cursor.execute(insert)
             self.connection.commit()
             print('natureza inserido: {0}'.format(nome))
@@ -77,8 +77,8 @@ class ImportarLattesService(object):
                         and ta.nome = \'{ta}\''.format(a=ano, t=titulo, n=natureza, ta=tag)
         self.cursor.execute(select)
         if (self.cursor.rowcount == 0):
-            insert = 'INSERT INTO public.trabalhos_trabalho(ano, titulo, ano_fim, tag_id, natureza_id, entidade_id) \
-                        VALUES ({a}, \'{t}\', {af}, ({ta}), ({na}), ({e}));'.format(a=ano, t=titulo, af='null' if not anoFim else anoFim
+            insert = 'INSERT INTO public.trabalhos_trabalho(ano, titulo, ano_fim, tag_id, natureza_id, entidade_id, ativo) \
+                        VALUES ({a}, \'{t}\', {af}, ({ta}), ({na}), ({e}), true);'.format(a=ano, t=titulo, af='null' if not anoFim else anoFim
                                                                           , ta=selectTag.format(tag)
                                                                           , na=selectNatureza.format(natureza)
                                                                           , e=selectEntidade.format(entidade))
